@@ -25,14 +25,14 @@ import { useNavigate } from "react-router-dom";
 
 // Sample Ticket Data
 const sampleTickets = [
-  { key: "#525464", subject: "Quo cupiditate quis dolores.", priority: "Less Urgent", status: "Pending", date: "3 hours ago", updated: "3 hours ago" },
-  { key: "#466763", subject: "Et consequatur voluptatem et dolor modi.", priority: "Less Urgent", status: "Waiting for confirmation", date: "3 hours ago", updated: "3 hours ago" },
-  { key: "#470049", subject: "Dolores est molestias beatae temporibus aspernatur delectus adipisci.", priority: "Generally", status: "Processing", date: "3 hours ago", updated: "3 hours ago" },
-  { key: "#606794", subject: "Fuga commodi aut rerum sed modi.", priority: "Very Urgent", status: "Resolved", date: "3 hours ago", updated: "3 hours ago" },
-  { key: "#525464", subject: "Quo cupiditate quis dolores.", priority: "Less Urgent", status: "Pending", date: "3 hours ago", updated: "3 hours ago" },
-  { key: "#466763", subject: "Et consequatur voluptatem et dolor modi.", priority: "Less Urgent", status: "Waiting for confirmation", date: "3 hours ago", updated: "3 hours ago" },
-  { key: "#470049", subject: "Dolores est molestias beatae temporibus aspernatur delectus adipisci.", priority: "Generally", status: "Processing", date: "3 hours ago", updated: "3 hours ago" },
-  { key: "#606794", subject: "Fuga commodi aut rerum sed modi.", priority: "Very Urgent", status: "Resolved", date: "3 hours ago", updated: "3 hours ago" }
+  { key: "#525464", subject: "Quo cupiditate quis dolores.", priority: "Less Urgent", status: "Pending", date: "3 hours ago", updated: "3 hours ago", assign: "Assign" },
+  { key: "#466763", subject: "Et consequatur voluptatem et dolor modi.", priority: "Less Urgent", status: "Waiting for confirmation", date: "3 hours ago", updated: "3 hours ago", assign: "Assign" },
+  { key: "#470049", subject: "Dolores est molestias beatae temporibus aspernatur delectus adipisci.", priority: "Generally", status: "Processing", date: "3 hours ago", updated: "3 hours ago", assign: "Assign" },
+  { key: "#606794", subject: "Fuga commodi aut rerum sed modi.", priority: "Very Urgent", status: "Resolved", date: "3 hours ago", updated: "3 hours ago", assign: "Assign" },
+  { key: "#525464", subject: "Quo cupiditate quis dolores.", priority: "Less Urgent", status: "Pending", date: "3 hours ago", updated: "3 hours ago", assign: "Assign" },
+  { key: "#466763", subject: "Et consequatur voluptatem et dolor modi.", priority: "Less Urgent", status: "Waiting for confirmation", date: "3 hours ago", updated: "3 hours ago", assign: "Assign" },
+  { key: "#470049", subject: "Dolores est molestias beatae temporibus aspernatur delectus adipisci.", priority: "Generally", status: "Processing", date: "3 hours ago", updated: "3 hours ago", assign: "Assign" },
+  { key: "#606794", subject: "Fuga commodi aut rerum sed modi.", priority: "Very Urgent", status: "Resolved", date: "3 hours ago", updated: "3 hours ago", assign: "Assign" }
 ];
 
 // Function to get status color
@@ -50,14 +50,14 @@ const getStatusColor = (status) => {
 };
 
 const AllExperiences = () => {
-    const navigate = useNavigate();
+  const navigate = useNavigate();
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
   const [search, setSearch] = useState("");
   const [priorityFilter, setPriorityFilter] = useState("");
   const [statusFilter, setStatusFilter] = useState("");
   const [filteredTickets, setFilteredTickets] = useState(sampleTickets);
-  
+
   // Handle Search
   const handleSearch = (e) => {
     setSearch(e.target.value);
@@ -76,7 +76,7 @@ const AllExperiences = () => {
   };
 
   // Filter Function
-  const filterTickets = (searchText, priority, status) => {
+  const filterTickets = (searchText, priority, status,) => {
     let updatedTickets = sampleTickets;
 
     if (searchText) {
@@ -103,7 +103,7 @@ const AllExperiences = () => {
       {/* Header */}
       <Header
         title="Total Experiences"
-        // subtitle="List of Customer Relationship Managers"
+      // subtitle="List of Customer Relationship Managers"
       />
       <Box display="flex" justifyContent="space-between" alignItems="center" flexWrap="wrap">
         <TextField
@@ -114,7 +114,7 @@ const AllExperiences = () => {
           onChange={handleSearch}
           sx={{ fontSize: "1rem" }}
         />
-        <Button
+        {/* <Button
           variant="contained"
           
           startIcon={<Add />}
@@ -131,7 +131,7 @@ const AllExperiences = () => {
           onClick={() => navigate("/crmform")}
         >
             Allot To Experience
-        </Button>
+        </Button> */}
       </Box>
 
       {/* <Box
@@ -191,6 +191,7 @@ const AllExperiences = () => {
               <TableCell sx={{ fontSize: "1rem", fontWeight: "bold" }}>Status</TableCell>
               <TableCell sx={{ fontSize: "1rem", fontWeight: "bold" }}>Date</TableCell>
               <TableCell sx={{ fontSize: "1rem", fontWeight: "bold" }}>Updated</TableCell>
+              <TableCell sx={{ fontSize: "1rem", fontWeight: "bold" }}>Assign</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -202,6 +203,21 @@ const AllExperiences = () => {
                 <TableCell sx={{ fontSize: "1rem", color: getStatusColor(ticket.status) }}>{ticket.status}</TableCell>
                 <TableCell sx={{ fontSize: "1rem" }}>{ticket.date}</TableCell>
                 <TableCell sx={{ fontSize: "1rem" }}>{ticket.updated}</TableCell>
+                <TableCell sx={{ fontSize: "1rem" }}><Button
+                  variant="contained"
+                  startIcon={<Add />}
+                  sx={{
+                    backgroundColor: colors.blueAccent[700], // Ensure this is valid
+                    color: '#fff',
+                    fontSize: "1rem",
+                    fontWeight: "bold",
+                    padding: "7px 15px",
+                    marginTop: "10px",
+                  }}
+                  onClick={() => navigate("/crmform")}
+                >
+                  {ticket.assign || "Assign"}
+                </Button></TableCell>
               </TableRow>
             ))}
           </TableBody>
