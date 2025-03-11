@@ -123,6 +123,7 @@ const ResolvedExperiences = () => {
             fontWeight: "bold",
             padding: "7px 15px",
             marginTop: "10px",
+            textTransform:"none"
           }}
 
           onClick={() => navigate("/crmform")}
