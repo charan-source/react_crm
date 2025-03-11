@@ -18,6 +18,8 @@ const MenuItemComponent = ({ title, to, icon, selected, setSelected, closeDrawer
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
 
+  const isActive = selected === to; // Check if the item is active
+
   return (
     <Box
       display="flex"
@@ -25,25 +27,9 @@ const MenuItemComponent = ({ title, to, icon, selected, setSelected, closeDrawer
       sx={{
         padding: "12px 16px",
         cursor: "pointer",
-        color: selected === to ? colors.blueAccent[500] : colors.grey[100],
-        backgroundColor: selected === to ? colors.blueAccent[700] : "inherit",
+        color: isActive ? "#fff" : colors.grey[100], // White color for active item
+        backgroundColor: isActive ? colors.blueAccent[700] : "inherit",
         "&:hover": { backgroundColor: colors.grey[800] },
-        "& .pro-sidebar-inner": {
-          background: `${colors.primary[400]} !important`,
-          // width: isCollapsed ? "80px" : "3px", // Increase width here
-        },
-        "& .pro-icon-wrapper": {
-          backgroundColor: "transparent !important",
-        },
-        "& .pro-inner-item": {
-          padding: "5px 35px 5px 20px !important",
-        },
-        "& .pro-inner-item:hover": {
-          color: "#868dfb !important",
-        },
-        "& .pro-menu-item.active": {
-          color: "#fff !important",
-        },
       }}
       onClick={() => {
         setSelected(to);
@@ -51,13 +37,16 @@ const MenuItemComponent = ({ title, to, icon, selected, setSelected, closeDrawer
         closeDrawer(); // Close modal on selection
       }}
     >
-      {icon}
+      <Box sx={{ color: isActive ? "#fff" : "inherit" }}> {/* Ensures icon color changes */}
+        {icon}
+      </Box>
       <Typography sx={{ marginLeft: 2 }}>
-        <Link to={to} style={{ textDecoration: "none", color: "inherit" }}>{title}</Link>
+        <Link to={to} style={{ textDecoration: "none", color: isActive ? "#fff" : "inherit" }}>{title}</Link>
       </Typography>
     </Box>
   );
 };
+
 
 const Topbar = () => {
   const theme = useTheme();
