@@ -202,7 +202,7 @@ const AllExperiences = () => {
                 <TableCell sx={{ fontSize: "1rem" }}>{ticket.priority}</TableCell>
                 <TableCell sx={{ fontSize: "1rem", color: getStatusColor(ticket.status) }}>{ticket.status}</TableCell>
                 <TableCell sx={{ fontSize: "1rem" }}>{ticket.date}</TableCell>
-                <TableCell sx={{ fontSize: "1rem" }}>{ticket.updated}</TableCell>
+                <TableCell sx={{ fontSize: "1rem", textTransform:"none" }}>{ticket.updated}</TableCell>
                 <TableCell sx={{ fontSize: "1rem" }}><Button
                   variant="contained"
                   startIcon={<Add />}
@@ -213,10 +213,11 @@ const AllExperiences = () => {
                     fontWeight: "bold",
                     padding: "7px 15px",
                     marginTop: "10px",
+                    textTransform:"none"
                   }}
                   onClick={() => navigate("/crmform")}
                 >
-                  {ticket.assign || "Assign"}
+            {ticket.assign.charAt(0).toUpperCase() + ticket.assign.slice(1).toLowerCase()}
                 </Button></TableCell>
               </TableRow>
             ))}
