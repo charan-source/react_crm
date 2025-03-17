@@ -379,7 +379,7 @@ const AllExperiences = () => {
             }}
             startIcon={<AddIcon />}
             onClick={handleNewTicket}
-            textTransform="none"
+            // textTransform="none"
           >
             New Experience
           </Button>

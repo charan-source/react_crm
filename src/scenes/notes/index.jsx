@@ -3,13 +3,13 @@ import { Box, Typography, List, ListItem, ListItemText, useMediaQuery, TextField
 import React, { useState } from "react";
 import { tokens } from "../../theme";
 import { Search as SearchIcon } from "@mui/icons-material";
-import { useNavigate } from "react-router-dom";
+// import { useNavigate } from "react-router-dom";
 
 const Notes = () => {
   // Responsive breakpoints
   const isDesktop = useMediaQuery("(min-width: 1024px)"); // Desktop (5 columns)
   const isTablet = useMediaQuery("(min-width: 768px)"); // Tablet (3 columns)
-     const navigate = useNavigate();
+    //  const navigate = useNavigate();
     const isMobile = useMediaQuery("(max-width: 600px)");
       const colors = tokens("light");
       const [openModal, setOpenModal] = useState(false);
@@ -33,6 +33,26 @@ const Notes = () => {
         console.log("Submitted Name:", name);
         handleCloseModal();
       };
+
+      const StyledTextField = ({ label, name, value, handleChange, handleBlur, error, multiline = false, rows = 1 }) => {
+        return (
+          <TextField
+            fullWidth
+            variant="outlined"
+            label={label}
+            name={name}
+            value={value}
+            onChange={handleChange}
+            onBlur={handleBlur}
+            error={!!error}
+            helperText={error}
+            multiline={multiline}
+            rows={rows}
+            sx={{ marginBottom: "15px" }}
+          />
+        );
+      };
+    
     
   // Dynamic columns based on screen size
   const columns = isDesktop ? 5 : isTablet ? 3 : 1;
@@ -72,7 +92,7 @@ const Notes = () => {
       value={searchTerm}
       onChange={handleSearchChange}
       InputProps={{
-        startAdornment: <SearchIcon sx={{ color: "action.active", mr: 1 }} />,
+        startAdornment: <SearchIcon sx={{ color: "action.active" }} />,
       }}
     />
     <Button
@@ -87,7 +107,7 @@ const Notes = () => {
         fontWeight: "bold",
         textTransform: "none",
       }}
-      onClick={() => navigate('/cmform')}
+      onClick={handleOpenModal}
     >
       Create New
     </Button>
@@ -190,6 +210,20 @@ const Notes = () => {
             onChange={(e) => setName(e.target.value)}
             sx={{ mb: 3 }}
           />
+          <Typography variant="h6" sx={{ mb: 2 }}>
+            Description
+          </Typography>
+
+<StyledTextField
+                // label="Details of your experience"
+                name="experienceDetails"
+                // value={values.experienceDetails}
+                // handleChange={handleChange}
+                // handleBlur={handleBlur}
+                // error={touched.experienceDetails && errors.experienceDetails}
+                multiline
+                rows={4}
+              />
           <Box display="flex" justifyContent="flex-start" gap={3}>
             <Button variant="contained" onClick={handleSubmit} sx={{backgroundColor:colors.blueAccent[700], color:"#ffffff", fontSize:"14px", padding:"8px 32px"}} >
               Submit
