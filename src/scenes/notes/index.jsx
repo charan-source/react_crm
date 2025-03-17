@@ -55,7 +55,7 @@ const Notes = () => {
 
 
 {isMobile ? (
-  <Box display="flex" flexDirection="column" justifyContent="space-between"  p={3} gap={2}>
+  <Box display="flex" justifyContent="space-between"  p={3} gap={2}>
     <TextField
       variant="outlined"
       placeholder="Search..."
@@ -63,7 +63,7 @@ const Notes = () => {
       sx={{
         background: "#ffffff",
         flexGrow: 1, // Makes input responsive
-        minWidth: "100px", // Minimum width for small screens
+        minWidth: "50px", // Minimum width for small screens
         maxWidth: "600px", // Maximum width for large screens
         padding: "5px 20px",
         borderRadius: "8px",

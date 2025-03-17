@@ -18,13 +18,7 @@ import logoLight from "./logo.png";
 
 // Shared getActivePage function
 const getActivePage = (pathname) => {
-  if (pathname.includes("/allExperiences") || pathname.includes("/crmform")) {
-    return "/allExperiences";
-  } else if (pathname.includes("/cm") || pathname.includes("/cmform")) {
-    return "/cm";
-  } else if (pathname.includes("/hob") || pathname.includes("/form")) {
-    return "/hob";
-  } else if (pathname.includes("/notes")) {
+  if (pathname.includes("/notes")) {
     return "/notes";
   } else if (pathname.includes("/calendar")) {
     return "/calendar";
@@ -32,11 +26,12 @@ const getActivePage = (pathname) => {
     return "/";
   } else if (
     pathname.includes("/allExperiences") ||
+    pathname.includes("/crmform") ||
     pathname.includes("/newExperiences") ||
     pathname.includes("/pendingExperiences") ||
     pathname.includes("/resolvedExperiences")
   ) {
-    return "/allExperiences"; // Ensure this matches the `to` prop of the Experiences Item
+    return "/crm"; // Ensure this matches the `to` prop of the Experiences Item
   } else {
     return pathname;
   }

@@ -19,19 +19,18 @@ import { useNavigate } from "react-router-dom";
 
 // Shared getActivePage function
 const getActivePage = (pathname) => {
-  if (pathname.includes("/allExperiences") || pathname.includes("/crmform")) {
-    return "/allExperiences";
-  } else if (pathname.includes("/notes")) {
+ if (pathname.includes("/notes")) {
     return "/notes";
   } else if (pathname.includes("/calendar")) {
     return "/calendar";
   } else if (
     pathname.includes("/allExperiences") ||
+    pathname.includes("/crmform") ||
     pathname.includes("/newExperiences") ||
     pathname.includes("/pendingExperiences") ||
     pathname.includes("/resolvedExperiences")
   ) {
-    return "/allExperiences"; // Ensure this matches the `to` prop of the Experiences Item
+    return "/crm"; // Ensure this matches the `to` prop of the Experiences Item
   } else {
     return pathname;
   }
