@@ -47,7 +47,7 @@ const CmForm = () => {
   };
 
   return (
-    <Box m="20px">
+    <Box m="20px" sx={{backgroundColor:"#ffffff", padding:"20px"}}>
       <Header title="Share your experience" />
 
       <Formik onSubmit={handleFormSubmit} initialValues={initialValues} validationSchema={checkoutSchema}>
