@@ -1,573 +1,270 @@
 import React, { useState } from "react";
 import {
   Box,
-  Table,
-  TableContainer,
-  TableHead,
-  TableBody,
-  TableRow,
-  TableCell,
-  Paper,
-  Typography,
-  useMediaQuery,
-  useTheme,
-  TextField,
   Button,
+  IconButton,
+  InputBase,
+  useTheme,
+  useMediaQuery,
   MenuItem,
-  Select,
-  InputLabel,
-  FormControl,
-  // IconButton,
-  Toolbar,
+  Menu,
+  Typography,
+  Checkbox,
+  FormControlLabel,
 } from "@mui/material";
+import { DataGrid } from "@mui/x-data-grid";
 import { tokens } from "../../theme";
 import {
   Search as SearchIcon,
+  FilterList as FilterIcon,
   ImportExport as ImportExportIcon,
   Add as AddIcon,
 } from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
 
+// Initial ticket data
+const initialTickets = [
+  { id: 1, subject: "Issue A", priority: "High", status: "Open", date: "2024-03-19", updated: "2 hours ago", },
+  { id: 2, subject: "Issue B", priority: "Low", status: "Closed", date: "2024-03-18", updated: "2 hours ago", },
+  { id: 3, subject: "Issue C", priority: "Medium", status: "In Progress", date: "2024-03-17", updated: "2 hours ago", },
+  { id: 4, subject: "Issue A", priority: "High", status: "Open", date: "2024-03-19", updated: "2 hours ago", },
+  { id: 5, subject: "Issue B", priority: "Low", status: "Closed", date: "2024-03-18", updated: "2 hours ago", },
+  { id: 6, subject: "Issue C", priority: "Medium", status: "In Progress", date: "2024-03-17", updated: "2 hours ago", },
+  { id: 7, subject: "Issue A", priority: "High", status: "Open", date: "2024-03-19", updated: "2 hours ago", },
+  { id: 8, subject: "Issue B", priority: "Low", status: "Closed", date: "2024-03-18", updated: "2 hours ago", },
+  { id: 9, subject: "Issue C", priority: "Medium", status: "In Progress", date: "2024-03-17", updated: "2 hours ago", },
+  { id: 10, subject: "Issue A", priority: "High", status: "Open", date: "2024-03-19", updated: "2 hours ago", },
+  { id: 11, subject: "Issue B", priority: "Low", status: "Closed", date: "2024-03-18", updated: "2 hours ago", },
+  { id: 12, subject: "Issue C", priority: "Medium", status: "In Progress", date: "2024-03-17", updated: "2 hours ago", },
+  { id: 13, subject: "Issue A", priority: "High", status: "Open", date: "2024-03-19", updated: "2 hours ago", },
+  { id: 14, subject: "Issue B", priority: "Low", status: "Closed", date: "2024-03-18", updated: "2 hours ago", },
+  { id: 15, subject: "Issue C", priority: "Medium", status: "In Progress", date: "2024-03-17", updated: "2 hours ago", },
+];
+
+// Columns for DataGrid
+const columns = [
+  { field: "id", headerName: "ID", flex: 0.4, headerClassName: "bold-header", disableColumnMenu: false, minWidth: 100 },
+  { field: "subject", headerName: "Subject", flex: 2, headerClassName: "bold-header", disableColumnMenu: true, minWidth: 200 },
+  { field: "priority", headerName: "Priority", flex: 1, headerClassName: "bold-header", disableColumnMenu: true, minWidth: 150 },
+  { field: "status", headerName: "Status", flex: 1, headerClassName: "bold-header", disableColumnMenu: true, minWidth: 150 },
+  { field: "date", headerName: "Created", flex: 1, headerClassName: "bold-header", disableColumnMenu: true, minWidth: 150 },
+  { field: "updated", headerName: "Updated", flex: 1, headerClassName: "bold-header", disableColumnMenu: true, minWidth: 150 },
+];
+
 const PendingExperiences = () => {
   const theme = useTheme();
-  const isMobile = useMediaQuery("(max-width: 1300px)");
   const colors = tokens(theme.palette.mode);
-     const Navigate = useNavigate();
+  const isMobile = useMediaQuery("(max-width: 600px)");
+  const Navigate = useNavigate();
 
-  // State for search, rows per page, and tickets
+  // State for tickets
+  const [tickets] = useState(initialTickets); // Removed setTickets since it's unused
+  const [filteredTickets, setFilteredTickets] = useState(initialTickets);
   const [searchTerm, setSearchTerm] = useState("");
-  const [rowsPerPage, setRowsPerPage] = useState(10);
-  const tickets = [
-    {
-      id: 223958,
-      subject: "Eligendi ut illum alias voluptatibus eos molestiae accusantium.",
-      // createdBy: "Krystel Jetmanie",
-      // assignedTo: "Kory Maegan",
-      priority: "Very Urgent",
-      status: "Processing",
-      date: "2 hours ago",
-      updated: "2 hours ago",
+  const [filterAnchorEl, setFilterAnchorEl] = useState(null);
+  const [selectedFilters, setSelectedFilters] = useState({ priority: [], status: [] });
 
-      type: "Bug",
-      category: "Software",
-      department: "IT",
-    },
-    {
-      id: 616840,
-      subject: "Vero excepturi cunque nulla est corrupti.",
-      // createdBy: "Savansh Ivory",
-      // assignedTo: "Leam Leda",
-      priority: "Less Urgent",
-      status: "Pending",
-      date: "2 hours ago",
-      updated: "2 hours ago",
-
-      type: "Feature Request",
-      category: "Hardware",
-      department: "Support",
-    },
-
-    {
-      id: 223958,
-      subject: "Eligendi ut illum alias voluptatibus eos molestiae accusantium.",
-      // createdBy: "Krystel Jetmanie",
-      // assignedTo: "Kory Maegan",
-      priority: "Very Urgent",
-      status: "Processing",
-      date: "2 hours ago",
-      updated: "2 hours ago",
-
-      type: "Bug",
-      category: "Software",
-      department: "IT",
-    },
-    {
-      id: 616840,
-      subject: "Vero excepturi cunque nulla est corrupti.",
-      // createdBy: "Savansh Ivory",
-      // assignedTo: "Leam Leda",
-      priority: "Less Urgent",
-      status: "Pending",
-      date: "2 hours ago",
-      updated: "2 hours ago",
-
-      type: "Feature Request",
-      category: "Hardware",
-      department: "Support",
-    },
-
-    {
-      id: 223958,
-      subject: "Eligendi ut illum alias voluptatibus eos molestiae accusantium.",
-      // createdBy: "Krystel Jetmanie",
-      // assignedTo: "Kory Maegan",
-      priority: "Very Urgent",
-      status: "Processing",
-      date: "2 hours ago",
-      updated: "2 hours ago",
-
-      type: "Bug",
-      category: "Software",
-      department: "IT",
-    },
-    {
-      id: 616840,
-      subject: "Vero excepturi cunque nulla est corrupti.",
-      // createdBy: "Savansh Ivory",
-      // assignedTo: "Leam Leda",
-      priority: "Less Urgent",
-      status: "Pending",
-      date: "2 hours ago",
-      updated: "2 hours ago",
-
-      type: "Feature Request",
-      category: "Hardware",
-      department: "Support",
-    },
-    {
-      id: 223958,
-      subject: "Eligendi ut illum alias voluptatibus eos molestiae accusantium.",
-      // createdBy: "Krystel Jetmanie",
-      // assignedTo: "Kory Maegan",
-      priority: "Very Urgent",
-      status: "Processing",
-      date: "2 hours ago",
-      updated: "2 hours ago",
-
-      type: "Bug",
-      category: "Software",
-      department: "IT",
-    },
-    {
-      id: 616840,
-      subject: "Vero excepturi cunque nulla est corrupti.",
-      // createdBy: "Savansh Ivory",
-      // assignedTo: "Leam Leda",
-      priority: "Less Urgent",
-      status: "Pending",
-      date: "2 hours ago",
-      updated: "2 hours ago",
-
-      type: "Feature Request",
-      category: "Hardware",
-      department: "Support",
-    },
-    {
-      id: 223958,
-      subject: "Eligendi ut illum alias voluptatibus eos molestiae accusantium.",
-      // createdBy: "Krystel Jetmanie",
-      // assignedTo: "Kory Maegan",
-      priority: "Very Urgent",
-      status: "Processing",
-      date: "2 hours ago",
-      updated: "2 hours ago",
-
-      type: "Bug",
-      category: "Software",
-      department: "IT",
-    },
-    {
-      id: 616840,
-      subject: "Vero excepturi cunque nulla est corrupti.",
-      // createdBy: "Savansh Ivory",
-      // assignedTo: "Leam Leda",
-      priority: "Less Urgent",
-      status: "Pending",
-      date: "2 hours ago",
-      updated: "2 hours ago",
-
-      type: "Feature Request",
-      category: "Hardware",
-      department: "Support",
-    },
-    {
-      id: 223958,
-      subject: "Eligendi ut illum alias voluptatibus eos molestiae accusantium.",
-      // createdBy: "Krystel Jetmanie",
-      // assignedTo: "Kory Maegan",
-      priority: "Very Urgent",
-      status: "Processing",
-      date: "2 hours ago",
-      updated: "2 hours ago",
-
-      type: "Bug",
-      category: "Software",
-      department: "IT",
-    },
-    {
-      id: 616840,
-      subject: "Vero excepturi cunque nulla est corrupti.",
-      priority: "Less Urgent",
-      status: "Pending",
-      date: "2 hours ago",
-      updated: "2 hours ago",
-      // createdBy: "Savansh Ivory",
-      // assignedTo: "Leam Leda",
-
-
-      type: "Feature Request",
-      category: "Hardware",
-      department: "Support",
-    },
-    // Add more ticket data here...
-  ];
-
-
-  // State for filter values
-  const [filters, setFilters] = useState({
-    type: "",
-    category: "",
-    department: "",
-    priority: "",
-    status: "",
-    // status: "",
-  });
-
-  // Handle filter change
-  const handleFilterChange = (event) => {
-    const { name, value } = event.target;
-    setFilters((prevFilters) => ({
-      ...prevFilters,
-      [name]: value,
-    }));
-  };
-
-  // Filter tickets based on search term and filters
-  const filteredTickets = tickets.filter((ticket) => {
-    const matchesSearch = ticket.subject.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesType = filters.type ? ticket.type === filters.type : true;
-    const matchesCategory = filters.category ? ticket.category === filters.category : true;
-    const matchesDepartment = filters.department ? ticket.department === filters.department : true;
-    const matchesPriority = filters.priority ? ticket.priority === filters.priority : true;
-    const matchesStatus = filters.status ? ticket.status === filters.status : true;
-
-    return (
-      matchesSearch &&
-      matchesType &&
-      matchesCategory &&
-      matchesDepartment &&
-      matchesPriority &&
-      matchesStatus
-    );
-  });
-
-  // Handle search input change
+  // Search filter
   const handleSearchChange = (event) => {
     setSearchTerm(event.target.value);
+    applyFilters(event.target.value, selectedFilters);
   };
 
-  // Handle rows per page change
-  const handleRowsPerPageChange = (event) => {
-    setRowsPerPage(event.target.value);
+  // Open & Close Filter Menu
+  const handleFilterClick = (event) => setFilterAnchorEl(event.currentTarget);
+  const handleFilterClose = () => setFilterAnchorEl(null);
+
+  // Handle Filter Selection
+  const handleFilterSelect = (filterType, value) => {
+    setSelectedFilters((prev) => {
+      const updatedFilters = { ...prev };
+      updatedFilters[filterType] = updatedFilters[filterType].includes(value)
+        ? updatedFilters[filterType].filter((item) => item !== value)
+        : [...updatedFilters[filterType], value];
+      applyFilters(searchTerm, updatedFilters);
+      return updatedFilters;
+    });
   };
 
-  // Handle import/export actions
-  const handleImport = () => {
-    alert("Import functionality to be implemented");
+  // Apply Filters
+  const applyFilters = (search, filters) => {
+    let filtered = tickets;
+    if (search.trim()) {
+      filtered = filtered.filter((ticket) =>
+        Object.values(ticket).some((value) =>
+          String(value).toLowerCase().includes(search.toLowerCase())
+        )
+      );
+    }
+    if (filters.priority.length) {
+      filtered = filtered.filter((ticket) => filters.priority.includes(ticket.priority));
+    }
+    if (filters.status.length) {
+      filtered = filtered.filter((ticket) => filters.status.includes(ticket.status));
+    }
+    setFilteredTickets(filtered);
   };
 
-  const handleExport = () => {
-    alert("Export functionality to be implemented");
-  };
-
-  // Handle new ticket button click
   const handleNewTicket = () => {
     Navigate('/crmform')
   };
-
+  // Get Unique Values for Filters
+  const getUniqueValues = (key) => [...new Set(tickets.map((ticket) => ticket[key]))];
 
   return (
-    <Box>
-      {/* Toolbar with search, import/export, and new ticket button */}
-      {/* Search Bar */}
-
-      <Box display="flex" flexDirection={isMobile ? "column" : "row"} justifyContent="space-around" alignItems="center" sx={{ padding: isMobile ? 0 : 2 }}>
-        <Box sx={{ width: isMobile ? "100%" : "auto" }}>
-          <TextField
-            variant="outlined"
-            placeholder="Search..."
-            size="small"
-            sx={{
-              background: "#ffffff",
-              width: isMobile ? "100%" : "560px",
-              "& .MuiInputBase-root": {
-                height: "48px",
-              },
-              "& .MuiInputBase-input": {
-                fontSize: "16px",
-              },
-            }}
-            value={searchTerm}
-            onChange={handleSearchChange}
-            InputProps={{
-              startAdornment: <SearchIcon sx={{ color: "action.active", mr: 1 }} />,
-            }}
-          />
+    <Box m="20px">
+      {/* Toolbar */}
+      <Box display="flex" justifyContent="space-between" alignItems="center" gap={2} mb={2} flexDirection={isMobile ? "column" : "row"}>
+        {/* Search Bar */}
+        <Box display="flex" backgroundColor="#ffffff" borderRadius="3px" flex={1}>
+          <InputBase sx={{ ml: 2, flex: 1 }} placeholder="Search" value={searchTerm} onChange={handleSearchChange} />
+          <IconButton type="button" sx={{ p: 1 }}>
+            <SearchIcon />
+          </IconButton>
         </Box>
-        {/* Rows per page selector */}
-        <Box
+
+        {/* Export Button */}
+        <Button
           sx={{
-            display: "flex",
-            flexDirection: isMobile ? "column" : "row",
-            justifyContent: isMobile ? "space-around" : "flex-end",
-            padding: 2,
-            gap: 5
-            // mb: 2, 
+            backgroundColor: colors.blueAccent[500],
+            color: "#ffffff",
+            whiteSpace: "nowrap",
+            fontWeight: "bold",
+            textTransform: "none"
           }}
+          variant="contained"
+          startIcon={<ImportExportIcon />}
+          onClick={() => alert("Export Data!")}
         >
+          Export
+        </Button>
 
-          <FormControl
-            size="small"
-            sx={{
-              backgroundColor: "#ffffff",
-              padding: "5px",
-              border: "none", // Removes border
-              boxShadow: "none", // Removes any shadow effects
-            }}
-          >
-            <InputLabel sx={{ backgroundColor: "#ffffff", paddingX: "4px" }}>
-              Rows per page
-            </InputLabel>
-            <Select
-              value={rowsPerPage}
-              onChange={handleRowsPerPageChange}
-              label="Rows per page"
-              sx={{
-                "&.MuiOutlinedInput-root": {
-                  "& fieldset": { border: "none" }, // Removes default border
-                  "&:hover fieldset": { border: "none" },
-                  "&.Mui-focused fieldset": { border: "none" },
-                },
-              }}
-            >
-              <MenuItem value={10}>10</MenuItem>
-              <MenuItem value={25}>25</MenuItem>
-              <MenuItem value={50}>50</MenuItem>
-              <MenuItem value={100}>100</MenuItem>
-            </Select>
-          </FormControl>
+        {/* Filter Button */}
+        <Button
+          sx={{
+            backgroundColor: colors.blueAccent[500],
+            color: "#ffffff",
+            whiteSpace: "nowrap",
+            fontWeight: "bold",
+            textTransform: "none"
+          }}
+          variant="contained"
+          startIcon={<FilterIcon />}
+          onClick={handleFilterClick}
+        >
+          Filter
+        </Button>
 
-
-          <Box sx={{ display: "flex", gap: 3 }}>
-            <Button
-              onClick={handleImport}
-              sx={{ backgroundColor: "#ffffff", display: "flex", alignItems: "center", gap: 1 }}
-            >
-              <ImportExportIcon />
-              <Typography variant="body2" sx={{ fontSize: "14px" }}>Import</Typography>
-            </Button>
-            <Button
-              onClick={handleExport}
-              sx={{ backgroundColor: "#ffffff", display: "flex", alignItems: "center", gap: 1 }}
-            >
-              <ImportExportIcon />
-              <Typography variant="body2" sx={{ fontSize: "14px" }}>Export</Typography>
-            </Button>
+        {/* Filter Menu */}
+        <Menu anchorEl={filterAnchorEl} open={Boolean(filterAnchorEl)} onClose={handleFilterClose}>
+          <Box p={2}>
+            <Typography variant="h6">Priority</Typography>
+            {getUniqueValues("priority").map((priority) => (
+              <MenuItem key={priority}>
+                <FormControlLabel
+                  control={<Checkbox checked={selectedFilters.priority.includes(priority)} onChange={() => handleFilterSelect("priority", priority)} />}
+                  label={priority}
+                />
+              </MenuItem>
+            ))}
           </Box>
 
-          <Button
-            variant="contained"
-            sx={{
-              background: colors.blueAccent[500],
-              fontWeight: "bold",
-              color: "#ffffff",
-              whiteSpace: "nowrap",
-              // paddingX: "15px"
-              padding: "12px 18px ",
-              fontSize: "14px",
-              textTransform :"none"
-            }}
-            startIcon={<AddIcon />}
-            onClick={handleNewTicket}
-          >
-            New Experience
-          </Button>
-        </Box>
-
-
-
+          <Box p={2}>
+            <Typography variant="h6">Status</Typography>
+            {getUniqueValues("status").map((status) => (
+              <MenuItem key={status}>
+                <FormControlLabel
+                  sx={{ backgroundColor: "#ffffff" }}
+                  control={<Checkbox checked={selectedFilters.status.includes(status)} onChange={() => handleFilterSelect("status", status)} />}
+                  label={status}
+                />
+              </MenuItem>
+            ))}
+          </Box>
+        </Menu>
+        <Button
+          variant="contained"
+          sx={{
+            background: colors.blueAccent[500],
+            fontWeight: "bold",
+            color: "#ffffff",
+            whiteSpace: "nowrap",
+            // paddingX: "15px"
+            // padding: "12px 18px ",
+            // fontSize: "14px",
+            textTransform: "none"
+          }}
+          startIcon={<AddIcon />}
+          onClick={handleNewTicket}
+        >
+          New Experience
+        </Button>
       </Box>
 
-      <Toolbar
+      {/* DataGrid */}
+      <Box height="70vh"
+        m="13px 0 0 0"
         sx={{
-          width:"100%",
-          display: "flex",
-          flexDirection: isMobile ? "column" : "row",
-          justifyContent: "space-between",
-          alignItems: isMobile ? "flex-start" : "center",
-          gap: isMobile ? 2 : 0,
-          mb: 2,
-          // padding: isMobile ? 0 : 1
-        }}
-
-      >
-        {/* Filter Dropdowns */}
-
-
-        <Box
-          sx={{
-            display: "flex",
-            flexDirection: isMobile ? "column" : "row",
-            gap: 1,
-            width: isMobile ? "100%" : "100%",
-            justifyContent: "space-between",
-
-            // alignItems:"center"
-          }}
-        >
-          <Typography style={{ fontSize: "18px", textAlign: isMobile ? "left" : "center" }}>Filter Ticket By:</Typography>
-          <FormControl variant="outlined" size="small" sx={{ minWidth: 140, backgroundColor: "#ffffff", }}>
-            <InputLabel sx={{ fontSize: "15px" }}>Type</InputLabel>
-            <Select
-              name="type"
-              value={filters.type}
-              onChange={handleFilterChange}
-              label="Type"
-              sx={{ padding: "5px" }}
-            >
-              <MenuItem value="">All</MenuItem>
-              <MenuItem value="Bug">Bug</MenuItem>
-              <MenuItem value="Feature Request">Feature Request</MenuItem>
-              <MenuItem value="Enhancement">Enhancement</MenuItem>
-            </Select>
-          </FormControl>
-
-          <FormControl variant="outlined" size="small" sx={{ minWidth: 140, backgroundColor: "#ffffff" }}>
-            <InputLabel sx={{ fontSize: "15px" }}>Category</InputLabel>
-            <Select
-              name="category"
-              value={filters.category}
-              onChange={handleFilterChange}
-              label="Category"
-              sx={{ padding: "5px" }}
-            >
-              <MenuItem value="">All</MenuItem>
-              <MenuItem value="Software">Software</MenuItem>
-              <MenuItem value="Hardware">Hardware</MenuItem>
-              <MenuItem value="Network">Network</MenuItem>
-            </Select>
-          </FormControl>
-
-          <FormControl variant="outlined" size="small" sx={{ minWidth: 140, backgroundColor: "#ffffff" }}>
-            <InputLabel sx={{ fontSize: "15px" }}>Department</InputLabel>
-            <Select
-              name="department"
-              value={filters.department}
-              onChange={handleFilterChange}
-              label="Department"
-              sx={{ padding: "5px" }}
-            >
-              <MenuItem value="">All</MenuItem>
-              <MenuItem value="IT">IT</MenuItem>
-              <MenuItem value="Support">Support</MenuItem>
-              <MenuItem value="HR">HR</MenuItem>
-            </Select>
-          </FormControl>
-
-          <FormControl variant="outlined" size="small" sx={{ minWidth: 140, backgroundColor: "#ffffff" }}>
-            <InputLabel sx={{ fontSize: "15px" }}>Priority</InputLabel>
-            <Select
-              name="priority"
-              value={filters.priority}
-              onChange={handleFilterChange}
-              label="Priority"
-              sx={{ padding: "5px" }}
-            >
-              <MenuItem value="">All</MenuItem>
-              <MenuItem value="Very Urgent">Very Urgent</MenuItem>
-              <MenuItem value="Urgent">Urgent</MenuItem>
-              <MenuItem value="Less Urgent">Less Urgent</MenuItem>
-            </Select>
-          </FormControl>
-
-          <FormControl variant="outlined" size="small" sx={{ minWidth: 140, backgroundColor: "#ffffff" }}>
-            <InputLabel sx={{ fontSize: "15px" }}>Status</InputLabel>
-            <Select
-              name="status"
-              value={filters.status}
-              onChange={handleFilterChange}
-              label="Status"
-              sx={{ padding: "5px" }}
-            >
-              <MenuItem value="">All</MenuItem>
-              <MenuItem value="Processing">Processing</MenuItem>
-              <MenuItem value="Pending">Pending</MenuItem>
-              <MenuItem value="Closed">Closed</MenuItem>
-            </Select>
-          </FormControl>
-
-          <FormControl variant="outlined" size="small" sx={{ minWidth: 140, backgroundColor: "#ffffff" }}>
-            <InputLabel sx={{ fontSize: "15px" }}>Assign To</InputLabel>
-            <Select
-              name="Assign To"
-              value={filters.status}
-              onChange={handleFilterChange}
-              label="Assign To"
-              sx={{ padding: "5px" }}
-            >
-              <MenuItem value="">All</MenuItem>
-              <MenuItem value="Processing">Processing</MenuItem>
-              <MenuItem value="Pending">Pending</MenuItem>
-              <MenuItem value="Closed">Closed</MenuItem>
-            </Select>
-          </FormControl>
-        </Box>
-
-
-
-      </Toolbar>
-
-
-
-      {/* Responsive Table */}
-      <Box sx={{ padding: isMobile ? 2 : 3 }}>
-        <TableContainer
-          component={Paper}
-          sx={{
-            maxWidth: "100%",
-            overflowX: "auto",
-            whiteSpace: "nowrap",
-
-            "&::-webkit-scrollbar": {
-              height: "4px", // Adjust scrollbar height
-            },
-            "&::-webkit-scrollbar-thumb": {
-              backgroundColor: "#888", // Scrollbar color
-              borderRadius: "10px",
-            },
-            "&::-webkit-scrollbar-thumb:hover": {
-              backgroundColor: "#555",
-            },
-          }}
-        >
-          <Table sx={{ minWidth: 650 }} aria-label="responsive table">
-            <TableHead>
-              <TableRow sx={{ backgroundColor: colors.blueAccent[500] }}>
-                <TableCell sx={{ fontWeight: "bold", fontSize: "16px", color: "#ffffff", textTransform:"uppercase" }}>ID</TableCell>
-                <TableCell sx={{ fontWeight: "bold", fontSize: "16px", color: "#ffffff" }}>Subject</TableCell>
-                <TableCell sx={{ fontWeight: "bold", fontSize: "16px", color: "#ffffff" }}>Priority</TableCell>
-                <TableCell sx={{ fontWeight: "bold", fontSize: "16px", color: "#ffffff" }}>Status</TableCell>
-                <TableCell sx={{ fontWeight: "bold", fontSize: "16px", color: "#ffffff" }}>Date</TableCell>
-                <TableCell sx={{ fontWeight: "bold", fontSize: "16px", color: "#ffffff" }}>Updated</TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {filteredTickets.slice(0, rowsPerPage).map((ticket) => (
-                <TableRow key={ticket.id}>
-                  <TableCell sx={{ fontSize: "16px" }}>{ticket.id}</TableCell>
-                  <TableCell sx={{ fontSize: "16px" }}>{ticket.subject}</TableCell>
-                  <TableCell sx={{ fontSize: "16px" }}>{ticket.priority}</TableCell>
-                  <TableCell sx={{ fontSize: "16px" }}>{ticket.status}</TableCell>
-                  <TableCell sx={{ fontSize: "16px" }}>{ticket.date}</TableCell>
-                  <TableCell sx={{ fontSize: "16px" }}>{ticket.updated}</TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </TableContainer>
+          "& .MuiDataGrid-root": {
+            border: "none",
+            overflowX: "auto", // Enable horizontal scrolling
+          },
+          "& .MuiDataGrid-cell": {
+            borderBottom: "none",
+            fontSize: "16px",
+            whiteSpace: "nowrap", // Prevent text wrapping
+            overflow: "visible", // Prevent text truncation
+          },
+          "& .MuiDataGrid-columnHeaders": {
+            backgroundColor: colors.blueAccent[700],
+            borderBottom: "none", // Remove the border below the header
+            fontWeight: "bold !important",
+            fontSize: "16px !important",
+            color: "#ffffff",
+          },
+          // "& .MuiDataGrid-root::-webkit-scrollbar-thumb":{
+          //    width: "2px !important",
+          //    height: "6px !important"
+          //  },
+          "& .MuiDataGrid-columnSeparator": {
+            display: "none", // Hide the column separator
+          },
+          "& .MuiDataGrid-columnHeaderTitle": {
+            fontWeight: "bold !important", // Ensure header text is bold
+          },
+          "& .MuiDataGrid-virtualScroller": {
+            backgroundColor: "#ffffff",
+          },
+          "& .MuiDataGrid-row": {
+            borderBottom: `0.5px solid ${colors.grey[300]}`, // Add border to the bottom of each row
+          },
+          "& .MuiTablePagination-root": {
+            color: "#ffffff !important", // Ensure pagination text is white
+          },
+          "& .MuiTablePagination-selectLabel, & .MuiTablePagination-input": {
+            color: "#ffffff !important", // Ensure select label and input text are white
+          },
+          "& .MuiTablePagination-displayedRows": {
+            color: "#ffffff !important", // Ensure displayed rows text is white
+          },
+          "& .MuiSvgIcon-root": {
+            color: "#ffffff !important", // Ensure pagination icons are white
+          },
+          "& .MuiDataGrid-footerContainer": {
+            borderTop: "none",
+            backgroundColor: colors.blueAccent[700],
+            color: "#ffffff",
+          },
+        }}>
+        <DataGrid
+          rows={filteredTickets}
+          columns={columns}
+          pageSize={10}
+        />
       </Box>
     </Box>
   );
 };
+
 
 export default PendingExperiences;
