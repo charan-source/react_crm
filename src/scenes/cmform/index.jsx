@@ -200,25 +200,7 @@ const CmForm = () => {
     </>
   )}
 
-{[
-    { label: "City Name", name: "cityName" },
-    { label: "Street Name", name: "streetName" },
-  ].map((field, index) => (
-    <TextField
-      key={index}
-      fullWidth
-      variant="outlined"
-      type={field.type || "text"}
-      label={field.label}
-      name={field.name}
-      value={values[field.name]}
-      onChange={handleChange}
-      onBlur={handleBlur}
-      error={!!touched[field.name] && !!errors[field.name]}
-      helperText={touched[field.name] && errors[field.name]}
-      sx={{ ...textFieldStyles, gridColumn: "span 2" }}
-    />
-  ))}
+
 
   {/* Email & Phone No */}
 
