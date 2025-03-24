@@ -147,7 +147,13 @@ const OrganizationDetails = () => {
                 onBlur={handleBlur}
                 error={!!touched.organization && !!errors.organization}
                 helperText={touched.organization && errors.organization}
-                sx={{ ...textFieldStyles, gridColumn: "span 1" }}
+                sx={{
+                  ...textFieldStyles,
+                  "& .MuiInputBase-input.Mui-disabled": {
+                    WebkitTextFillColor: "#000", // Keep text color black when disabled
+                  },
+                   gridColumn: "span 1"
+                }}
                 disabled={!isEditing} // Disable in non-editing mode
               />
 
