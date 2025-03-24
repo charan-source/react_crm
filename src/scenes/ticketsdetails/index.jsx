@@ -193,6 +193,13 @@ const TicketDetails = () => {
                     onBlur={handleBlur}
                     error={!!touched.priority && !!errors.priority}
                     disabled={!isEditing} // Disable in non-editing mode
+                    sx={{
+                      ...textFieldStyles,
+                      "& .MuiInputBase-input.Mui-disabled": {
+                        WebkitTextFillColor: "#000", // Keep text color black when disabled
+                      },
+                       gridColumn: "span 1"
+                    }}
                   >
                     {CrmDetails.map((crm) => (
                       <MenuItem key={crm.id} value={crm.priority}>

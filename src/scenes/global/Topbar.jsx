@@ -17,6 +17,7 @@ import WorkOutlineOutlinedIcon from "@mui/icons-material/WorkOutlineOutlined";
 import logoLight from "./logo.png";
 import { useNavigate } from "react-router-dom";
 
+
 // Shared getActivePage function
 const getActivePage = (pathname) => {
  if (pathname.includes("/notes")) {
