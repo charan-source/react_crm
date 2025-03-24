@@ -6,7 +6,7 @@ import HomeOutlinedIcon from "@mui/icons-material/HomeOutlined";
 import CalendarTodayOutlinedIcon from "@mui/icons-material/CalendarTodayOutlined";
 // import PeopleAltOutlinedIcon from "@mui/icons-material/PeopleAltOutlined";
 // import HandshakeOutlinedIcon from "@mui/icons-material/HandshakeOutlined";
-// import BusinessOutlinedIcon from "@mui/icons-material/BusinessOutlined";
+import BusinessOutlinedIcon from "@mui/icons-material/BusinessOutlined";
 import DescriptionOutlinedIcon from "@mui/icons-material/DescriptionOutlined";
 import WorkOutlineOutlinedIcon from "@mui/icons-material/WorkOutlineOutlined";
 import LogoutOutlinedIcon from "@mui/icons-material/LogoutOutlined";
@@ -22,11 +22,10 @@ const getActivePage = (pathname) => {
     return "/notes";
   } else if (pathname.includes("/calendar")) {
     return "/calendar";
-  }else if (pathname.includes("/profile")) {
-    return "/";
-  } else if (
+  }else if (
     pathname.includes("/allExperiences") ||
     pathname.includes("/ticketdetails") ||
+    pathname.includes("/profile") ||
     pathname.includes("/newExperiences") ||
     pathname.includes("/pendingExperiences") ||
     pathname.includes("/resolvedExperiences")
@@ -40,7 +39,14 @@ const getActivePage = (pathname) => {
 
   ) {
     return "/cm"; // Ensure this matches the `to` prop of the Experiences Item
-  } else {
+  }
+  else if (
+    pathname.includes("/organization") ||
+    pathname.includes("/organizationdetails")
+
+  ) {
+    return "/organization"; // Ensure this matches the `to` prop of the Experiences Item
+  }  else {
     return pathname;
   }
 };
@@ -132,6 +138,7 @@ const Sidebar = ({ isSidebar }) => {
       <List sx={{ padding: "20px" }}>
         <Item title="Dashboard" to="/" icon={<HomeOutlinedIcon />} selected={selected} setSelected={setSelected} />
         <Item title="Customer Manager" to="/cm" icon={<WorkOutlineOutlinedIcon />} selected={selected} setSelected={setSelected} />
+        <Item title="Organization" to="/organization" icon={<BusinessOutlinedIcon />} selected={selected} setSelected={setSelected} />
         <Item title="Notes" to="/notes" icon={<DescriptionOutlinedIcon />} selected={selected} setSelected={setSelected} />
         <Item title="Calendar" to="/calendar" icon={<CalendarTodayOutlinedIcon />} selected={selected} setSelected={setSelected} />
         <Item title="Logout" to="/logout" icon={<LogoutOutlinedIcon />} selected={selected} setSelected={setSelected} />

@@ -9,7 +9,7 @@ import LogoutOutlinedIcon from "@mui/icons-material/LogoutOutlined";
 import CalendarTodayOutlinedIcon from "@mui/icons-material/CalendarTodayOutlined";
 // import PeopleAltOutlinedIcon from "@mui/icons-material/PeopleAltOutlined";
 // import HandshakeOutlinedIcon from "@mui/icons-material/HandshakeOutlined";
-// import BusinessOutlinedIcon from "@mui/icons-material/BusinessOutlined";
+import BusinessOutlinedIcon from "@mui/icons-material/BusinessOutlined";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faAngleRight } from '@fortawesome/free-solid-svg-icons';
 import DescriptionOutlinedIcon from "@mui/icons-material/DescriptionOutlined";
@@ -26,6 +26,7 @@ const getActivePage = (pathname) => {
   } else if (
     pathname.includes("/allExperiences") ||
     pathname.includes("/ticketdetails") ||
+    pathname.includes("/profile") ||
     pathname.includes("/newExperiences") ||
     pathname.includes("/pendingExperiences") ||
     pathname.includes("/resolvedExperiences")
@@ -36,8 +37,16 @@ const getActivePage = (pathname) => {
     pathname.includes("/cmform") ||
     pathname.includes("/cmdetails") ||
     pathname.includes("/cm")
-  ) {
+  )
+   {
     return "/cm"; // Ensure this matches the `to` prop of the Experiences Item
+  } 
+  else if (
+    pathname.includes("/organization") ||
+    pathname.includes("/organizationdetails")
+
+  ) {
+    return "/organization"; // Ensure this matches the `to` prop of the Experiences Item
   }  else {
     return pathname;
   }
@@ -116,6 +125,10 @@ const Topbar = () => {
           return "Customer Manager Details";
       case "/allExperiences":
         return "All Experiences";
+      case "/organization":
+        return "Organization";
+      case "/organizationdetails":
+        return "Organization Details";
       case "/newExperiences":
         return "New Experiences";
       case "/pendingExperiences":
@@ -144,6 +157,10 @@ const Topbar = () => {
         return { primaryTitle: "Experiences", secondaryTitle: null };
       case "/hob":
         return { primaryTitle: "Head of The Business", secondaryTitle: null };
+      case "/organization":
+        return { primaryTitle: "Organizations", secondaryTitle: null };
+      case "/organizationdetails":
+        return { primaryTitle: "Organization Details", secondaryTitle: null };
       case "/ticketdetails":
         return { primaryTitle: "Experience Details", secondaryTitle: null };  
       // case "/cmdetails":
@@ -517,6 +534,7 @@ const Topbar = () => {
         >
           <Item title="Dashboard" to="/" icon={<HomeOutlinedIcon />} selected={selected} setSelected={setSelected} handleClose={() => setIsModalOpen(false)} />
           <Item title="Customer Manager" to="/cm" icon={<WorkOutlineOutlinedIcon />} selected={selected} setSelected={setSelected} handleClose={() => setIsModalOpen(false)} />
+          <Item title="Organization" to="/organization" icon={<BusinessOutlinedIcon />} selected={selected} setSelected={setSelected} handleClose={() => setIsModalOpen(false)} />
           <Item title="Notes" to="/notes" icon={<DescriptionOutlinedIcon />} selected={selected} setSelected={setSelected} handleClose={() => setIsModalOpen(false)} />
           <Item title="Calendar" to="/calendar" icon={<CalendarTodayOutlinedIcon />} selected={selected} setSelected={setSelected} handleClose={() => setIsModalOpen(false)} />
           <Item title="Logout" to="/logout" icon={<LogoutOutlinedIcon />} selected={selected} setSelected={setSelected} handleClose={() => setIsModalOpen(false)} />
