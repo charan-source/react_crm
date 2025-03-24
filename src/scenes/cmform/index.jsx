@@ -1,35 +1,23 @@
-import { Box, Button, TextField, useMediaQuery, useTheme } from "@mui/material";
+import { Box, Button, TextField, useMediaQuery, useTheme, Autocomplete } from "@mui/material";
 import { tokens } from "../../theme";
 import { Formik } from "formik";
 import * as yup from "yup";
 import Select from '@mui/material/Select';
-// import Grid from '@mui/material/Grid';
-import { CountryDropdown, RegionDropdown } from 'react-country-region-selector';
 import FormControl from '@mui/material/FormControl';
 import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
 import React from 'react';
-
-// import Header from "../../components/Header";
-const customRender = ({ options, customProps, ...selectProps }) => (
-  <Select {...selectProps} {...customProps}>
-    {options.map(({ label, value, key }) => (
-      <MenuItem value={value} key={key}>
-        {label}
-      </MenuItem>
-    ))}
-  </Select>
-);
+import { Country } from 'country-state-city'; // Only import Country
 
 const CmForm = () => {
   const theme = useTheme();
   const isNonMobile = useMediaQuery("(max-width:600px)");
   const colors = tokens(theme.palette.mode); // Get theme colors
-  const [country, setCountry] = React.useState('');
-  const [region, setRegion] = React.useState('');
 
   const handleFormSubmit = (values) => {
-    console.log("Form Data:", values);
+    // Combine phone code and phone number
+    const fullPhoneNumber = `${values.phoneCode}${values.PhoneNo}`;
+    console.log("Form Data:", { ...values, fullPhoneNumber });
   };
 
   const initialValues = {
@@ -43,7 +31,9 @@ const CmForm = () => {
     country: "",
     email: "",
     PhoneNo: "",
-    // subject: "",
+    phoneCode: "",
+    dropdownSelection: "",
+    crmselection: "",
   };
 
   const checkoutSchema = yup.object().shape({
@@ -61,7 +51,8 @@ const CmForm = () => {
       .matches(/^[0-9]+$/, "Only numbers are allowed")
       .min(10, "Must be at least 10 digits")
       .required("Required"),
-    // subject: yup.string().required("Required"),
+    phoneCode: yup.string().required("Required"),
+    crmselection: yup.string().required(""),
   });
 
   const textFieldStyles = {
@@ -74,8 +65,8 @@ const CmForm = () => {
         borderColor: "#999",
         boxShadow: "4px 4px 8px rgba(0, 0, 0, 0.15)",
       },
-      padding: "8px 12px", // Adjust padding to reduce height
-      height: "50px", // Set a fixed height for the input
+      padding: "8px 12px",
+      height: "50px",
     },
     "& .MuiInputLabel-root": {
       color: "#555",
@@ -85,129 +76,121 @@ const CmForm = () => {
     },
   };
 
+  // Get all countries
+  const countries = Country.getAllCountries();
+
   return (
-    <Box m="15px" sx={{
-      backgroundColor: "#ffffff", padding: "20px"
+    <Box m="15px" sx={{ backgroundColor: "#ffffff", padding: "20px" }}>
+      <Formik initialValues={initialValues} validationSchema={checkoutSchema} onSubmit={handleFormSubmit}>
+        {({ values, errors, touched, handleBlur, handleChange, handleSubmit, setFieldValue }) => (
+          <form onSubmit={handleSubmit}>
+            <Box
+              display="grid"
+              gap="20px"
+              gridTemplateColumns={isNonMobile ? "repeat(1, minmax(0, 1fr))" : "repeat(3, minmax(0, 1fr))"}
+            >
+              {/* First Name, Middle Name, Last Name, Designation */}
+              {[
+                { label: "First Name", name: "firstName" },
+                { label: "Middle Name", name: "middleName" },
+                { label: "Last Name", name: "lastName" },
+                { label: "Email", name: "email", type: "email" },
+              ].map((field, index) => (
+                <TextField
+                  key={index}
+                  fullWidth
+                  variant="outlined"
+                  type={field.type || "text"}
+                  label={field.label}
+                  name={field.name}
+                  value={values[field.name]}
+                  onChange={handleChange}
+                  onBlur={handleBlur}
+                  error={!!touched[field.name] && !!errors[field.name]}
+                  helperText={touched[field.name] && errors[field.name]}
+                  sx={{ ...textFieldStyles, gridColumn: "span 1" }}
+                />
+              ))}
+       <Box sx={{ gridColumn: "span 1", display: "flex", gap: "10px" }}>
+                           {/* Phone Code Dropdown */}
+                           <Autocomplete
+                             fullWidth
+                             options={countries}
+                             getOptionLabel={(option) => `+${option.phonecode} (${option.name})`}
+                             value={countries.find((country) => `+${country.phonecode}` === values.phoneCode) || null}
+                             onChange={(event, newValue) => {
+                               setFieldValue("phoneCode", newValue ? `+${newValue.phonecode}` : "");
+                             }}
+                             renderInput={(params) => (
+                               <TextField
+                                 {...params}
+                                 label="Phone Code"
+                                 sx={textFieldStyles}
+                                 error={!!touched.phoneCode && !!errors.phoneCode}
+                                 helperText={touched.phoneCode && errors.phoneCode}
+                                 
+                               />
+                             )}
+              
+                           />
+           
+                           {/* Phone Number Input */}
+                           <TextField
+                             fullWidth
+                             variant="outlined"
+                             type="text"
+                             label="Phone No"
+                             name="PhoneNo"
+                             value={values.PhoneNo}
+                             onChange={handleChange}
+                             onBlur={handleBlur}
+                             error={!!touched.PhoneNo && !!errors.PhoneNo}
+                             helperText={touched.PhoneNo && errors.PhoneNo}
+                             sx={textFieldStyles}
+                        
+                           />
+               </Box>
+           
 
-    }}>
-      {/* <Header title="Create CM" subtitle="Create a New Customer Manager Profile" /> */}
+              {/* Organization Dropdown */}
+              <FormControl fullWidth sx={{ gridColumn: "span 1", ...textFieldStyles }}>
+                <InputLabel>Organization</InputLabel>
+                <Select
+                  name="dropdownSelection"
+                  value={values.dropdownSelection}
+                  onChange={handleChange}
+                  onBlur={handleBlur}
+                >
+                  <MenuItem value="">Select</MenuItem>
+                  <MenuItem value="Option 1">Wipro</MenuItem>
+                  <MenuItem value="Option 2">Tata</MenuItem>
+                  <MenuItem value="Option 3">Reliance</MenuItem>
+                  <MenuItem value="Option 4">Santoor</MenuItem>
+                </Select>
+                {touched.dropdownSelection && errors.dropdownSelection && (
+                  <p style={{ color: "red", fontSize: "12px" }}>{errors.dropdownSelection}</p>
+                )}
+              </FormControl>
 
-      <Formik initialValues={initialValues} validationSchema={checkoutSchema} onSubmit={handleFormSubmit} sx={{ backgroundColor: "#ffffff" }}>
-        {({ values, errors, touched, handleBlur, handleChange, handleSubmit }) => (
-          <form onSubmit={handleSubmit} >
-<Box
-  display="grid"
-  gap="20px"
-  gridTemplateColumns={isNonMobile ? "repeat(1, minmax(0, 1fr))" : "repeat(4, minmax(0, 1fr))"}
->
-
-  {/* First Name, Middle Name, Last Name, Designation */}
-  {[
-    { label: "First Name", name: "firstName" },
-    { label: "Middle Name", name: "middleName" },
-    { label: "Last Name", name: "lastName" },
-        { label: "Email Id", name: "email", type: "email" },
-    { label: "Phone No", name: "PhoneNo", type: "text" },
-    { label: "Designation", name: "designation" },
-  ].map((field, index) => (
-    <TextField
-      key={index}
-      fullWidth
-      variant="outlined"
-      type={field.type || "text"}
-      label={field.label}
-      name={field.name}
-      value={values[field.name]}
-      onChange={handleChange}
-      onBlur={handleBlur}
-      error={!!touched[field.name] && !!errors[field.name]}
-      helperText={touched[field.name] && errors[field.name]}
-      sx={{ ...textFieldStyles, gridColumn: "span 2" }}
-    />
-  ))}
-
-
-  {/* Country and State Dropdowns First */}
-  <FormControl fullWidth sx={{ gridColumn: "span 2", ...textFieldStyles }}>
-    <InputLabel>Country</InputLabel>
-    <CountryDropdown
-      value={country}
-      onChange={(val) => {
-        setCountry(val);
-        setRegion('');
-      }}
-      style={{
-        width: "100%",
-        height: "50px",
-        borderRadius: "8px",
-        border: "1px solid #ccc",
-        padding: "8px 12px",
-        backgroundColor: "#ffffff",
-        boxShadow: "2px 2px 5px rgba(0, 0, 0, 0.1)",
-      }}
-      customRender={customRender}
-    />
-  </FormControl>
-
-  <FormControl fullWidth sx={{ gridColumn: "span 2", ...textFieldStyles }}>
-    <InputLabel>State</InputLabel>
-    <RegionDropdown
-      country={country}
-      value={region}
-      onChange={(val) => setRegion(val)}
-      disableWhenEmpty={true}
-      style={{
-        width: "100%",
-        height: "50px",
-        borderRadius: "8px",
-        border: "1px solid #ccc",
-        padding: "8px 12px",
-        backgroundColor: "#ffffff",
-        boxShadow: "2px 2px 5px rgba(0, 0, 0, 0.1)",
-      }}
-      customRender={customRender}
-    />
-  </FormControl>
-
-  {/* City and Street Appear After Country & State Selection */}
-  {country && region && (
-    <>
-      <TextField
-        fullWidth
-        variant="outlined"
-        label="City"
-        name="city"
-        value={values.city}
-        onChange={handleChange}
-        onBlur={handleBlur}
-        error={!!touched.city && !!errors.city}
-        helperText={touched.city && errors.city}
-        sx={{ ...textFieldStyles, gridColumn: "span 2" }}
-      />
-
-      <TextField
-        fullWidth
-        variant="outlined"
-        label="Street"
-        name="street"
-        value={values.street}
-        onChange={handleChange}
-        onBlur={handleBlur}
-        error={!!touched.street && !!errors.street}
-        helperText={touched.street && errors.street}
-        sx={{ ...textFieldStyles, gridColumn: "span 2" }}
-      />
-    </>
-  )}
-
-
-
-  {/* Email & Phone No */}
-
-</Box>
-
-
-      {/* </Grid> */}
+              <FormControl fullWidth sx={{ gridColumn: "span 1", ...textFieldStyles }}>
+                <InputLabel>Customer Relationship Manager</InputLabel>
+                <Select
+                  name="crmselection"
+                  value={values.crmselection}
+                  onChange={handleChange}
+                  onBlur={handleBlur}
+                >
+                  <MenuItem value="">Select</MenuItem>
+                  <MenuItem value="Option 1">Charan</MenuItem>
+                  <MenuItem value="Option 2">Satya</MenuItem>
+                  <MenuItem value="Option 3">Dinesh</MenuItem>
+                  <MenuItem value="Option 4">Benny</MenuItem>
+                </Select>
+                {touched.crmselection && errors.crmselection && (
+                  <p style={{ color: "red", fontSize: "12px" }}>{errors.crmselection}</p>
+                )}
+              </FormControl>
+            </Box>
 
             <Box display="flex" justifyContent="flex-end" mt="24px">
               <Button
@@ -223,11 +206,9 @@ const CmForm = () => {
                   backgroundColor: colors.blueAccent[700],
                   color: "#ffffff",
                   textTransform: "none",
-
                   "&:hover": { backgroundColor: colors.blueAccent[600], boxShadow: "5px 5px 10px rgba(0, 0, 0, 0.3)" },
                 }}
               >
-
                 Create
               </Button>
             </Box>

@@ -26,7 +26,7 @@ const getActivePage = (pathname) => {
     return "/";
   } else if (
     pathname.includes("/allExperiences") ||
-    // pathname.includes("/crmform") ||
+    pathname.includes("/ticketdetails") ||
     pathname.includes("/newExperiences") ||
     pathname.includes("/pendingExperiences") ||
     pathname.includes("/resolvedExperiences")
@@ -35,6 +35,7 @@ const getActivePage = (pathname) => {
   }
   else if (
     pathname.includes("/cmform") ||
+    pathname.includes("/cmdetails") ||
     pathname.includes("/cm")
 
   ) {

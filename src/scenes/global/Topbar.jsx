@@ -25,7 +25,7 @@ const getActivePage = (pathname) => {
     return "/calendar";
   } else if (
     pathname.includes("/allExperiences") ||
-    pathname.includes("/crmform") ||
+    pathname.includes("/ticketdetails") ||
     pathname.includes("/newExperiences") ||
     pathname.includes("/pendingExperiences") ||
     pathname.includes("/resolvedExperiences")
@@ -34,6 +34,7 @@ const getActivePage = (pathname) => {
   }
   else if (
     pathname.includes("/cmform") ||
+    pathname.includes("/cmdetails") ||
     pathname.includes("/cm")
   ) {
     return "/cm"; // Ensure this matches the `to` prop of the Experiences Item
@@ -109,6 +110,10 @@ const Topbar = () => {
         return "Allot New Experience";
       case "/form":
         return "";
+      case "/ticketdetails":
+        return " Experience Details";  
+        case "/cmdetails":
+          return "Customer Manager Details";
       case "/allExperiences":
         return "All Experiences";
       case "/newExperiences":
@@ -133,10 +138,16 @@ const Topbar = () => {
         return { primaryTitle: "Dashboard", secondaryTitle: null };
       case "/cm":
         return { primaryTitle: "Customer Manager", secondaryTitle: null };
+      case "/cmdetails":
+        return { primaryTitle: "Customer Manager Details ", secondaryTitle: null };  
       case "/crm":
         return { primaryTitle: "Experiences", secondaryTitle: null };
       case "/hob":
         return { primaryTitle: "Head of The Business", secondaryTitle: null };
+      case "/ticketdetails":
+        return { primaryTitle: "Experience Details", secondaryTitle: null };  
+      // case "/cmdetails":
+      //   return { primaryTitle: "Customer Manager Details ", secondaryTitle: null };       
       case "/cmform":
         return { primaryTitle: "Customer Manager", secondaryTitle: "Create a New Customer Manager" };
       case "/crmform":

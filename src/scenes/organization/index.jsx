@@ -24,29 +24,28 @@ import { useNavigate } from "react-router-dom";
 
 // Initial ticket data
 const initialTickets = [
-  { id: 1, name: "Charan Palemala", email: "charan@gmail.com", phone: "1234567890", city: "Visakhapatnam", created: "14th March, 2025", country: "India", state: "Andhra Pradesh", phoneno: "7386569469", phonenocode:"+91", customermanager:"RamBabu", organization: "Wipro" },
-  { id: 2, name: "Satya Narayana", email: "Satya@gmail.com", phone: "1234567890", city: "Visakhapatnam", created: "14th March, 2025", country: "India", state: "Andhra Pradesh", phoneno: "7386569469", phonenocode: "+91", customermanager: "RamBabu", organization: "Infosys" },
-  { id: 3, name: "Rambabu bade", email: "john@gmail.com", phone: "1234567890", city: "New York", created: "15th March, 2025", country: "India", state: "Andhra Pradesh", phoneno: "7386569469", phonenocode:"+91", customermanager:"RamBabu", organization: "TCS" },
-  { id: 4, name: "Charan Palemala", email: "charan@gmail.com", phone: "1234567890", city: "Visakhapatnam", created: "14th March, 2025", country: "India", state: "Andhra Pradesh", phoneno: "7386569469", phonenocode:"+91", customermanager:"RamBabu", organization: "HCL" },
-  { id: 5, name: "Satya Narayana", email: "Satya@gmail.com", phone: "1234567890", city: "Visakhapatnam", created: "14th March, 2025", country: "India", state: "Andhra Pradesh", phoneno: "7386569469", phonenocode:"+91", customermanager:"RamBabu", organization: "Tech Mahindra" },
-  { id: 6, name: "John Doe", email: "john@gmail.com", phone: "1234567890", city: "New York", created: "15th March, 2025", country: "India", state: "Andhra Pradesh", phoneno: "7386569469", phonenocode:"+91", customermanager:"RamBabu", Organization: "HCL" },
-  { id: 7, name: "Charan Palemala", email: "charan@gmail.com", phone: "1234567890", city: "Visakhapatnam", created: "14th March, 2025", country: "India", state: "Andhra Pradesh", phoneno: "7386569469", phonenocode:"+91", customermanager:"RamBabu", organization: "Infosys" },
-  { id: 8, name: "Satya Narayana", email: "Satya@gmail.com", phone: "1234567890", city: "Visakhapatnam", created: "14th March, 2025", country: "India", state: "Andhra Pradesh", phoneno: "7386569469", phonenocode:"+91", customermanager:"RamBabu", organization: "Wipro" },
-  { id: 9, name: "John Doe", email: "john@gmail.com", phone: "1234567890", city: "New York", created: "15th March, 2025", country: "India", state: "Andhra Pradesh", phoneno: "7386569469", phonenocode:"+91", customermanager:"RamBabu", organization: "TCS" },
+  { id: 1, name: "Charan Palemala", email: "charan@gmail.com", phone: "1234567890", city: "Visakhapatnam", created: "14th March, 2025", country: "India", state: "Andhra Pradesh", phoneno: "7386569469", phonenocode:"+91", address:"5448 Claudine Extension Suite 701", organization: "Wipro" },
+  { id: 2, name: "Satya Narayana", email: "Satya@gmail.com", phone: "1234567890", city: "Visakhapatnam", created: "14th March, 2025", country: "India", state: "Andhra Pradesh", phoneno: "7386569469", phonenocode: "+91", address: "5448 Claudine Extension Suite 701", organization: "Infosys" },
+  { id: 3, name: "Rambabu bade", email: "john@gmail.com", phone: "1234567890", city: "New York", created: "15th March, 2025", country: "India", state: "Andhra Pradesh", phoneno: "7386569469", phonenocode:"+91", address:"5448 Claudine Extension Suite 701", organization: "TCS" },
+  { id: 4, name: "Charan Palemala", email: "charan@gmail.com", phone: "1234567890", city: "Visakhapatnam", created: "14th March, 2025", country: "India", state: "Andhra Pradesh", phoneno: "7386569469", phonenocode:"+91", address:"5448 Claudine Extension Suite 701", organization: "HCL" },
+  { id: 5, name: "Satya Narayana", email: "Satya@gmail.com", phone: "1234567890", city: "Visakhapatnam", created: "14th March, 2025", country: "India", state: "Andhra Pradesh", phoneno: "7386569469", phonenocode:"+91", address:"5448 Claudine Extension Suite 701", organization: "Tech Mahindra" },
+  { id: 6, name: "John Doe", email: "john@gmail.com", phone: "1234567890", city: "New York", created: "15th March, 2025", country: "India", state: "Andhra Pradesh", phoneno: "7386569469", phonenocode:"+91", address:"5448 Claudine Extension Suite 701", Organization: "HCL" },
+  { id: 7, name: "Charan Palemala", email: "charan@gmail.com", phone: "1234567890", city: "Visakhapatnam", created: "14th March, 2025", country: "India", state: "Andhra Pradesh", phoneno: "7386569469", phonenocode:"+91", address:"5448 Claudine Extension Suite 701", organization: "Infosys" },
+  { id: 8, name: "Satya Narayana", email: "Satya@gmail.com", phone: "1234567890", city: "Visakhapatnam", created: "14th March, 2025", country: "India", state: "Andhra Pradesh", phoneno: "7386569469", phonenocode:"+91", address:"5448 Claudine Extension Suite 701", organization: "Wipro" },
+  { id: 9, name: "John Doe", email: "john@gmail.com", phone: "1234567890", city: "New York", created: "15th March, 2025", country: "India", state: "Andhra Pradesh", phoneno: "7386569469", phonenocode:"+91", address:"5448 Claudine Extension Suite 701", organization: "TCS" },
 ];
-
 
 // Columns for DataGrid
 const columns = [
   { field: "id", headerName: "ID", flex: 0.4, headerClassName: "bold-header", disableColumnMenu: false, minWidth: 100 },
-  { field: "name", headerName: "Name", flex: 2, headerClassName: "bold-header", disableColumnMenu: true, minWidth: 200 },
-  { field: "email", headerName: "Email", flex: 1, headerClassName: "bold-header", disableColumnMenu: true, minWidth: 150 },
+  { field: "name", headerName: "Name", flex: 1, headerClassName: "bold-header", disableColumnMenu: true, minWidth: 200 },
+  // { field: "city", headerName: "City", flex: 1, headerClassName: "bold-header", disableColumnMenu: true, minWidth: 150 },
   { field: "phone", headerName: "Phone", flex: 1, headerClassName: "bold-header", disableColumnMenu: true, minWidth: 150 },
   { field: "city", headerName: "City", flex: 1, headerClassName: "bold-header", disableColumnMenu: true, minWidth: 150 },
-  { field: "created", headerName: "Created", flex: 1, headerClassName: "bold-header", disableColumnMenu: true, minWidth: 150 },
+  // { field: "created", headerName: "Created", flex: 1, headerClassName: "bold-header", disableColumnMenu: true, minWidth: 150 },
 ];
 
-const Cm = () => {
+const Organization = () => {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
   const isMobile = useMediaQuery("(max-width: 600px)");
@@ -101,12 +100,13 @@ const Cm = () => {
   // };
 
   const handleNewTicket = () => {
-    Navigate('/cmform')
+    Navigate('/form')
   };
 
   const handleRowClick = (params) => {
-    Navigate('/cmdetails', { state: { ticket: params.row } });
+    Navigate('/organizationdetails', { state: { ticket: params.row } });
   };
+
   // Get Unique Values for Filters
   // const getUniqueValues = (key) => [...new Set(tickets.map((ticket) => ticket[key]))];
 
@@ -328,4 +328,4 @@ const Cm = () => {
     </Box>
   );
 };
-export default Cm;
+export default Organization;
