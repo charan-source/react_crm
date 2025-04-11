@@ -1,7 +1,17 @@
 import { useState } from "react";
 import { Routes, Route } from "react-router-dom";
-import { CssBaseline, ThemeProvider, Box, useMediaQuery } from "@mui/material";
+import { CssBaseline, Box, useMediaQuery } from "@mui/material";
 import { ColorModeContext, useMode } from "./theme";
+import { ThemeProvider, createTheme } from '@mui/material/styles';
+
+
+// Import Poppins font weights
+import '@fontsource/poppins/300.css'; // Light
+import '@fontsource/poppins/400.css'; // Regular
+import '@fontsource/poppins/500.css'; // Medium
+import '@fontsource/poppins/600.css'; // Semi-bold
+import '@fontsource/poppins/700.css'; // Bold
+
 
 import Topbar from "./scenes/global/Topbar";
 import Sidebar from "./scenes/global/Sidebar";
@@ -29,6 +39,10 @@ import TicketDetails from "./scenes/ticketsdetails";
 import CmDetails from "./scenes/cmdetails";
 import Organization from "./scenes/organization";
 import OrganizationDetails from "./scenes/organizationdetails";
+import Tasks from "./scenes/tasks";
+import TaskForm from "./scenes/taskform";
+import TaskDetails from "./scenes/taskdetails";
+
 
 function App() {
   const [theme, colorMode] = useMode();
@@ -36,9 +50,56 @@ function App() {
   // const [drawer, setDrawerOpen] = useState(true);
   const isMobile = useMediaQuery("(max-width: 900px)"); // Detect mobile screen
 
+
+  const appTheme = createTheme(theme, {
+    typography: {
+      fontFamily: [
+        'Poppins',
+        '-apple-system',
+        'BlinkMacSystemFont',
+        '"Segoe UI"',
+        'Roboto',
+        '"Helvetica Neue"',
+        'Arial',
+        'sans-serif',
+        '"Apple Color Emoji"',
+        '"Segoe UI Emoji"',
+        '"Segoe UI Symbol"',
+      ].join(','),
+      h1: { fontWeight: 700 },
+      h2: { fontWeight: 700 },
+      h3: { fontWeight: 600 },
+      h4: { fontWeight: 600 },
+      h5: { fontWeight: 500 },
+      h6: { fontWeight: 500 },
+    },
+    components: {
+      MuiCssBaseline: {
+        styleOverrides: {
+          body: {
+            fontFamily: 'Poppins, sans-serif',
+          },
+        },
+      },
+      MuiButton: {
+        styleOverrides: {
+          root: {
+            fontFamily: 'Poppins, sans-serif',
+            fontWeight: 500,
+          },
+        },
+      },
+      MuiTypography: {
+        defaultProps: {
+          fontFamily: 'Poppins, sans-serif',
+        },
+      },
+    },
+  });
+
   return (
     <ColorModeContext.Provider value={colorMode}>
-      <ThemeProvider theme={theme}>
+      <ThemeProvider theme={appTheme}>
         <CssBaseline />
 
         {/* Topbar: Full width at the top */}
@@ -77,9 +138,11 @@ function App() {
             <Route path="/" element={<Dashboard />} />
             <Route path="/cm" element={<Cm />} />
             <Route path="/crm" element={<Crm />} />
+            <Route path="/tasks" element={<Tasks />} />
             {/* <Route path="/hob" element={<Hob />} /> */}
             <Route path="/form" element={<Form />} />
             <Route path="/cmform" element={<CmForm />} />
+            <Route path="/taskform" element={<TaskForm />} />
             <Route path="/crmform" element={<CrmForm />} />
             {/* <Route path="/bsuform" element={<BsuForm />} /> */}
             <Route path="/bar" element={<Bar />} />
@@ -91,6 +154,7 @@ function App() {
             <Route path="/notes" element={<Notes />} />
             <Route path="/profile" element={<Profile />} />
             <Route path="/ticketdetails" element={<TicketDetails />} />
+            <Route path="/taskdetails" element={<TaskDetails />} />
             <Route path="/organization" element={<Organization />} />
             <Route path="/organizationdetails" element={<OrganizationDetails />} />
             <Route path="/cmdetails" element={<CmDetails />} />

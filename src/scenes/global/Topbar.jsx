@@ -2,7 +2,8 @@ import { Box, IconButton, useTheme, Typography, useMediaQuery, Modal, Backdrop, 
 import { useState, useEffect } from "react";
 import { tokens } from "../../theme";
 import { Link, useLocation } from "react-router-dom";
-import PersonOutlinedIcon from "@mui/icons-material/PersonOutlined";
+import PersonIcon from "@mui/icons-material/Person";
+import NotificationsIcon from "@mui/icons-material/Notifications";
 import MenuOutlinedIcon from "@mui/icons-material/MenuOutlined";
 import HomeOutlinedIcon from "@mui/icons-material/HomeOutlined";
 import LogoutOutlinedIcon from "@mui/icons-material/LogoutOutlined";
@@ -13,6 +14,7 @@ import BusinessOutlinedIcon from "@mui/icons-material/BusinessOutlined";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faAngleRight } from '@fortawesome/free-solid-svg-icons';
 import DescriptionOutlinedIcon from "@mui/icons-material/DescriptionOutlined";
+import TaskOutlinedIcon from "@mui/icons-material/TaskOutlined";
 import WorkOutlineOutlinedIcon from "@mui/icons-material/WorkOutlineOutlined";
 import logoLight from "./logo.png";
 import { useNavigate } from "react-router-dom";
@@ -20,7 +22,7 @@ import { useNavigate } from "react-router-dom";
 
 // Shared getActivePage function
 const getActivePage = (pathname) => {
- if (pathname.includes("/notes")) {
+  if (pathname.includes("/notes")) {
     return "/notes";
   } else if (pathname.includes("/calendar")) {
     return "/calendar";
@@ -38,17 +40,33 @@ const getActivePage = (pathname) => {
     pathname.includes("/cmform") ||
     pathname.includes("/cmdetails") ||
     pathname.includes("/cm")
-  )
-   {
+  ) {
     return "/cm"; // Ensure this matches the `to` prop of the Experiences Item
-  } 
+  }
   else if (
     pathname.includes("/organization") ||
     pathname.includes("/organizationdetails")
 
   ) {
     return "/organization"; // Ensure this matches the `to` prop of the Experiences Item
-  }  else {
+  }
+  else if (
+    pathname.includes("/tasks") ||
+    pathname.includes("/taskform") ||
+    pathname.includes("/taskdetails")
+
+  )
+   {
+    return "/tasks"; // Ensure this matches the `to` prop of the Experiences Item
+  }
+  else if (
+    pathname.includes("/tasks") ||
+    pathname.includes("/taskform") ||
+    pathname.includes("/taskdetails")
+
+  ) {
+    return "/tasks"; // Ensure this matches the `to` prop of the Experiences Item
+  } else {
     return pathname;
   }
 };
@@ -120,10 +138,16 @@ const Topbar = () => {
         return "Allot New Experience";
       case "/form":
         return "";
+      case "/tasks":
+        return "Tasks List";
+      case "/taskdetails":
+        return "Task Details";
+      case "/taskform":
+        return "Create New Task";
       case "/ticketdetails":
-        return " Experience Details";  
-        case "/cmdetails":
-          return "Customer Manager Details";
+        return " Experience Details";
+      case "/cmdetails":
+        return "Customer Manager Details";
       case "/allExperiences":
         return "All Experiences";
       case "/organization":
@@ -153,7 +177,7 @@ const Topbar = () => {
       case "/cm":
         return { primaryTitle: "Customer Manager", secondaryTitle: null };
       case "/cmdetails":
-        return { primaryTitle: "Customer Manager Details ", secondaryTitle: null };  
+        return { primaryTitle: "Customer Manager Details ", secondaryTitle: null };
       case "/crm":
         return { primaryTitle: "Experiences", secondaryTitle: null };
       case "/hob":
@@ -163,7 +187,13 @@ const Topbar = () => {
       case "/organizationdetails":
         return { primaryTitle: "Organization Details", secondaryTitle: null };
       case "/ticketdetails":
-        return { primaryTitle: "Experience Details", secondaryTitle: null };  
+        return { primaryTitle: "Experience Details", secondaryTitle: null };
+      case "/tasks":
+        return { primaryTitle: "Tasks List", secondaryTitle: null };
+      case "/taskform":
+        return { primaryTitle: "Tasks List", secondaryTitle: "Create a New Task" };
+      case "/taskdetails":
+        return { primaryTitle: "Task Details", secondaryTitle: null };
       // case "/cmdetails":
       //   return { primaryTitle: "Customer Manager Details ", secondaryTitle: null };       
       case "/cmform":
@@ -292,7 +322,7 @@ const Topbar = () => {
               paddingX: isMobile ? 2 : 9,
               paddingY: 1,
               boxShadow: "0px 4px 4px -2px rgba(0, 0, 0, 0.1)",
-              padding: 4,
+              padding: 1,
             }}
           >
             {/* Greeting Message */}
@@ -308,7 +338,7 @@ const Topbar = () => {
               }}
             >
               {/* <Typography sx={{ color: "#8d8d8d", fontSize: isMobile ? "30px" : "25px" }}>
-                {getGreeting()} Charan
+                {getGreeting()} Delphin
               </Typography> */}
               <Typography sx={{ color: "#8d8d8d", fontSize: isMobile ? "16px" : "16px" }}>
                 {currentTime.toLocaleString("en-US", {
@@ -326,6 +356,26 @@ const Topbar = () => {
                 alignItems: "center",
               }}
             >
+
+              <IconButton sx={{ gap: 1 }}>
+                <Box
+                  sx={{
+                    width: isMobile ? 25 : 30,
+                    height: isMobile ? 25 : 30,
+                    borderRadius: "50%",
+                    backgroundColor: colors.blueAccent[500],
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                  }}
+                >
+                  <NotificationsIcon sx={{ fontSize: isMobile ? 18 : 20, color: "#fff" }} />
+
+                </Box>
+                {/* <Typography sx={{ color: "#000", fontSize: isMobile ? 15 : 17 }}>
+                  Delphin
+                </Typography> */}
+              </IconButton>
               <IconButton onClick={() => navigate("profile")} sx={{ gap: 1 }}>
                 <Box
                   sx={{
@@ -338,10 +388,10 @@ const Topbar = () => {
                     justifyContent: "center",
                   }}
                 >
-                  <PersonOutlinedIcon sx={{ fontSize: isMobile ? 18 : 20, color: "#fff" }} />
+                  <PersonIcon sx={{ fontSize: isMobile ? 18 : 20, color: "#fff" }} />
                 </Box>
                 <Typography sx={{ color: "#000", fontSize: isMobile ? 15 : 17 }}>
-                Charan
+                  Delphin
                 </Typography>
               </IconButton>
             </Box>
@@ -374,7 +424,7 @@ const Topbar = () => {
               }}
             >
               {/* <Typography sx={{ color: "#8d8d8d", fontSize: isMobile ? "20px" : "25px" }}>
-                {getGreeting()} Charan
+                {getGreeting()} Delphin
               </Typography> */}
               <Typography sx={{ color: "#8d8d8d", fontSize: isMobile ? "14px" : "16px" }}>
                 {currentTime.toLocaleString("en-US", {
@@ -392,6 +442,25 @@ const Topbar = () => {
                 alignItems: "center",
               }}
             >
+              <IconButton sx={{ gap: 1 }}>
+                <Box
+                  sx={{
+                    width: isMobile ? 25 : 30,
+                    height: isMobile ? 25 : 30,
+                    borderRadius: "50%",
+                    backgroundColor: colors.blueAccent[500],
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                  }}
+                >
+                  <NotificationsIcon sx={{ fontSize: isMobile ? 18 : 20, color: "#fff" }} />
+
+                </Box>
+                {/* <Typography sx={{ color: "#000", fontSize: isMobile ? 15 : 17 }}>
+                  Delphin
+                </Typography> */}
+              </IconButton>
               <IconButton onClick={() => navigate("profile")} sx={{ gap: 1 }}>
                 <Box
                   sx={{
@@ -404,10 +473,10 @@ const Topbar = () => {
                     justifyContent: "center",
                   }}
                 >
-                  <PersonOutlinedIcon sx={{ fontSize: isMobile ? 18 : 20, color: "#fff" }} />
+                  <PersonIcon sx={{ fontSize: isMobile ? 18 : 20, color: "#fff" }} />
                 </Box>
                 <Typography sx={{ color: "#000", fontSize: isMobile ? 15 : 17 }}>
-                  Charan
+                  Delphin
                 </Typography>
               </IconButton>
             </Box>
@@ -442,7 +511,7 @@ const Topbar = () => {
                 textAlign: isMobile ? "text" : "text",
               }}
             >
-              <Typography sx={{ color: "#ffffff", fontSize: isMobile ? "20px" : "25px" }}>
+              <Typography sx={{ color: "#ffffff", fontSize: isMobile ? "20px" : "20px", fontWeight: "bold" }}>
                 {getPageTitle()}
               </Typography>
               <Box sx={{ color: "#ffffff", alignItems: "center", gap: 1, display: "flex" }}>
@@ -451,7 +520,8 @@ const Topbar = () => {
                   fontSize="small"
                   sx={{ cursor: "pointer" }}
                 />
-                      <CustomDivider /> 
+
+                <CustomDivider />
                 <Typography>{getPageTitle()}</Typography>
               </Box>
             </Box>
@@ -481,19 +551,19 @@ const Topbar = () => {
                 paddingLeft: isMobile ? "12px" : "20px",
               }}
             >
-              <Typography sx={{ color: "#ffffff", fontSize: isMobile ? "20px" : "25px" }}>
+              <Typography sx={{ color: "#ffffff", fontSize: isMobile ? "17px" : "20px", fontWeight: "bold" }}>
                 {primaryTitle}
               </Typography>
               <Box sx={{ color: "#ffffff", alignItems: "center", gap: 1, display: "flex" }}>
                 <HomeOutlinedIcon onClick={() => navigate("/")} fontSize="small" sx={{ cursor: "pointer" }} />
-                <CustomDivider /> 
-                <Typography sx={{ cursor: "pointer" }} onClick={() => navigate(-1)}>
+                <CustomDivider />
+                <Typography sx={{ cursor: "pointer", fontSize: "14px" }} onClick={() => navigate(-1)}>
                   {primaryTitle}
                 </Typography>
                 {secondaryTitle && (
                   <>
-                   <CustomDivider /> 
-                    <Typography sx={{ cursor: "pointer" }} onClick={() => navigate(location.pathname)}>
+                    <CustomDivider />
+                    <Typography sx={{ cursor: "pointer", fontSize: "14px" }} onClick={() => navigate(location.pathname)}>
                       {secondaryTitle}
                     </Typography>
                   </>
@@ -503,45 +573,46 @@ const Topbar = () => {
           </Box>
         )}
       </Box>
-<Box sx={{alignItems:"center"}}>
-      {/* Mobile Sidebar Modal */}
-      <Modal open={isModalOpen} onClose={() => setIsModalOpen(false)}
-        sx={{
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-        }}
-        BackdropComponent={Backdrop}
-        BackdropProps={{
-          timeout: 500,
-          sx: { backgroundColor: "rgba(0, 0, 0, 0.5)" }, // Semi-transparent black backdrop
-        }}
-      >
-        <Box
-          width="100%"
+      <Box sx={{ alignItems: "center" }}>
+        {/* Mobile Sidebar Modal */}
+        <Modal open={isModalOpen} onClose={() => setIsModalOpen(false)}
           sx={{
-            background: colors.primary[400],
-            height: "100vh",
-            position: "absolute",
-            left: 0,
-            top: "10%",
-            padding: "20px",
             display: "flex",
-            flexDirection: "column",
+            justifyContent: "center",
             alignItems: "center",
-            overflow: "hidden",
-            boxShadow: "4px 0px 8px rgba(0, 0, 0, 0.2)",
+          }}
+          BackdropComponent={Backdrop}
+          BackdropProps={{
+            timeout: 500,
+            sx: { backgroundColor: "rgba(0, 0, 0, 0.5)" }, // Semi-transparent black backdrop
           }}
         >
-          <Item title="Dashboard" to="/" icon={<HomeOutlinedIcon />} selected={selected} setSelected={setSelected} handleClose={() => setIsModalOpen(false)} />
-          <Item title="Customer Manager" to="/cm" icon={<WorkOutlineOutlinedIcon />} selected={selected} setSelected={setSelected} handleClose={() => setIsModalOpen(false)} />
-          <Item title="Organization" to="/organization" icon={<BusinessOutlinedIcon />} selected={selected} setSelected={setSelected} handleClose={() => setIsModalOpen(false)} />
-          <Item title="Notes" to="/notes" icon={<DescriptionOutlinedIcon />} selected={selected} setSelected={setSelected} handleClose={() => setIsModalOpen(false)} />
-          <Item title="Calendar" to="/calendar" icon={<CalendarTodayOutlinedIcon />} selected={selected} setSelected={setSelected} handleClose={() => setIsModalOpen(false)} />
-          <Item title="Logout" to="/logout" icon={<LogoutOutlinedIcon />} selected={selected} setSelected={setSelected} handleClose={() => setIsModalOpen(false)} />
+          <Box
+            width="100%"
+            sx={{
+              background: colors.primary[400],
+              height: "100vh",
+              position: "absolute",
+              left: 0,
+              top: "10%",
+              padding: "20px",
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              overflow: "hidden",
+              boxShadow: "4px 0px 8px rgba(0, 0, 0, 0.2)",
+            }}
+          >
+            <Item title="Dashboard" to="/" icon={<HomeOutlinedIcon />} selected={selected} setSelected={setSelected} handleClose={() => setIsModalOpen(false)} />
+            <Item title="Customer Manager" to="/cm" icon={<WorkOutlineOutlinedIcon />} selected={selected} setSelected={setSelected} handleClose={() => setIsModalOpen(false)} />
+            <Item title="Organization" to="/organization" icon={<BusinessOutlinedIcon />} selected={selected} setSelected={setSelected} handleClose={() => setIsModalOpen(false)} />
+            <Item title="Tasks" to="/tasks" icon={<TaskOutlinedIcon />} selected={selected} setSelected={setSelected} handleClose={() => setIsModalOpen(false)} />
+            <Item title="Notes" to="/notes" icon={<DescriptionOutlinedIcon />} selected={selected} setSelected={setSelected} handleClose={() => setIsModalOpen(false)} />
+            <Item title="Calendar" to="/calendar" icon={<CalendarTodayOutlinedIcon />} selected={selected} setSelected={setSelected} handleClose={() => setIsModalOpen(false)} />
+            <Item title="Logout" to="/logout" icon={<LogoutOutlinedIcon />} selected={selected} setSelected={setSelected} handleClose={() => setIsModalOpen(false)} />
 
-        </Box>
-      </Modal>
+          </Box>
+        </Modal>
       </Box>
     </Box>
   );

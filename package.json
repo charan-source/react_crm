@@ -5,6 +5,7 @@
   "dependencies": {
     "@emotion/react": "^11.10.4",
     "@emotion/styled": "^11.10.4",
+    "@fontsource/poppins": "^5.2.5",
     "@fortawesome/free-solid-svg-icons": "^6.7.2",
     "@fortawesome/react-fontawesome": "^0.2.2",
     "@fullcalendar/core": "^5.11.3",
@@ -27,7 +28,10 @@
     "@testing-library/user-event": "^13.5.0",
     "chart.js": "^3.9.1",
     "country-state-city": "^3.2.1",
+    "downloadjs": "^1.4.7",
     "formik": "^2.2.9",
+    "jodit-pro": "^4.6.4",
+    "jodit-react": "^5.2.19",
     "react": "^18.2.0",
     "react-chartjs-2": "^4.3.1",
     "react-country-region-selector": "^4.0.2",

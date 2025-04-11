@@ -9,6 +9,7 @@ import CalendarTodayOutlinedIcon from "@mui/icons-material/CalendarTodayOutlined
 import BusinessOutlinedIcon from "@mui/icons-material/BusinessOutlined";
 import DescriptionOutlinedIcon from "@mui/icons-material/DescriptionOutlined";
 import WorkOutlineOutlinedIcon from "@mui/icons-material/WorkOutlineOutlined";
+import TaskOutlinedIcon from "@mui/icons-material/TaskOutlined";
 import LogoutOutlinedIcon from "@mui/icons-material/LogoutOutlined";
 import logoLight from "./logo.png";
 
@@ -37,8 +38,18 @@ const getActivePage = (pathname) => {
     pathname.includes("/cmdetails") ||
     pathname.includes("/cm")
 
-  ) {
+  )
+   {
     return "/cm"; // Ensure this matches the `to` prop of the Experiences Item
+  }
+  else if (
+    pathname.includes("/tasks") ||
+    pathname.includes("/taskform") ||
+    pathname.includes("/taskdetails")
+
+  )
+   {
+    return "/tasks"; // Ensure this matches the `to` prop of the Experiences Item
   }
   else if (
     pathname.includes("/organization") ||
@@ -84,7 +95,7 @@ const Item = ({ title, to, icon, selected, setSelected }) => {
         sx={{
           "& .MuiTypography-root": { // Target the nested Typography component
             fontWeight: "bold !important", // Ensure text is bold for selected item
-            fontSize: "14px",
+            fontSize: "13px",
           },
         }}
       />
@@ -139,6 +150,7 @@ const Sidebar = ({ isSidebar }) => {
         <Item title="Dashboard" to="/" icon={<HomeOutlinedIcon />} selected={selected} setSelected={setSelected} />
         <Item title="Customer Manager" to="/cm" icon={<WorkOutlineOutlinedIcon />} selected={selected} setSelected={setSelected} />
         <Item title="Organization" to="/organization" icon={<BusinessOutlinedIcon />} selected={selected} setSelected={setSelected} />
+        <Item title="Tasks" to="/tasks" icon={<TaskOutlinedIcon />} selected={selected} setSelected={setSelected} />
         <Item title="Notes" to="/notes" icon={<DescriptionOutlinedIcon />} selected={selected} setSelected={setSelected} />
         <Item title="Calendar" to="/calendar" icon={<CalendarTodayOutlinedIcon />} selected={selected} setSelected={setSelected} />
         <Item title="Logout" to="/logout" icon={<LogoutOutlinedIcon />} selected={selected} setSelected={setSelected} />
