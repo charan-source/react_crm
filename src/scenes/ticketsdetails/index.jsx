@@ -1,13 +1,37 @@
-import { Box, useMediaQuery, Typography, Button, useTheme, TextField, Autocomplete } from "@mui/material";
+import { Box, useMediaQuery, Typography, Button, useTheme, TextField, Autocomplete, IconButton, Modal } from "@mui/material";
 import { Formik } from "formik";
 import { tokens } from "../../theme";
 import * as yup from "yup";
 import React, { useMemo, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import download from 'downloadjs';
-import JoditEditor from 'jodit-react';
+// import JoditEditor from 'jodit-react';
 // import {Jodit} from 'jodit-pro';
-import 'jodit-pro/es5/jodit.min.css';
+// import 'jodit-pro/es5/jodit.min.css';
+
+
+// import ReactQuill from 'react-quill';
+// import 'react-quill/dist/quill.snow.css';
+
+
+
+import {
+  FormatBold, FormatItalic, FormatUnderlined,
+  FormatListNumbered, FormatListBulleted,
+  InsertPhoto, TableChart, YouTube
+} from '@mui/icons-material';
+import { useEditor, EditorContent } from '@tiptap/react'
+import StarterKit from '@tiptap/starter-kit'
+import Image from '@tiptap/extension-image'
+import Table from '@tiptap/extension-table'
+import TableRow from '@tiptap/extension-table-row'
+import TableHeader from '@tiptap/extension-table-header'
+import TableCell from '@tiptap/extension-table-cell'
+import Youtube from '@tiptap/extension-youtube'
+
+
+
+
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 // import { Block } from "@mui/icons-material";
 // import PhoneIcon from '@mui/icons-material/Phone';
@@ -17,13 +41,16 @@ import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 const TicketDetails = () => {
   const theme = useTheme();
   const isDesktop = useMediaQuery("(min-width:600px)");
-  // const isMobile = useMediaQuery("(max-width:600px)");
+  const isMobile = useMediaQuery("(max-width:484px)");
   const isLargeScreen = useMediaQuery("(min-width:800px)");
   const location = useLocation();
   const [isDownloading, setIsDownloading] = useState(false);
   const [selectedFile, setSelectedFile] = useState(null);
   const [isEditing, setIsEditing] = useState(false);
   const colors = tokens(theme.palette.mode);
+  const [openTaskModal, setOpenTaskModal] = useState(false);
+
+  // const editor = useRef(null);
 
   const ticket = useMemo(() => location.state?.ticket || {}, [location.state]);
 
@@ -113,22 +140,286 @@ const TicketDetails = () => {
     { text: "Hello! How can I help you today?", sender: "support" }
   ]);
   const [newMessage, setNewMessage] = useState("");
+  // const [newMessage, setNewMessage] = useState("");
+
 
   // Add this function to handle sending messages
+  // const config = {
+  //   readonly: false,
+  //   toolbar: false, // Hide toolbar for cleaner chat input
+  //   statusbar: false,
+  //   spellcheck: true,
+  //   enter: "br", // Enter creates <br> instead of <p>
+  //   defaultActionOnPaste: "insert_only_text",
+  //   buttons: [],
+  //   height: 100,
+  //   width: '100%',
+  //   style: {
+  //     background: '#fff',
+  //     color: '#333',
+  //     fontSize: '14px',
+  //     border: `1px solid ${colors.grey[300]}`,
+  //     borderRadius: '4px',
+  //     padding: '8px'
+  //   }
+  // };
+  const editor = useEditor({
+    extensions: [
+      StarterKit,
+      Image.configure({
+        inline: true,
+        allowBase64: true,
+      }),
+      Table.configure({
+        resizable: true,
+      }),
+      TableRow,
+      TableHeader,
+      TableCell,
+      Youtube,
+    ],
+    content: newMessage,
+    onUpdate: ({ editor }) => {
+      setNewMessage(editor.getHTML());
+    },
+  });
+
+  const addImage = () => {
+    const url = window.prompt('Enter the URL of the image:');
+    if (url) {
+      editor.chain().focus().setImage({ src: url }).run();
+    }
+  };
+
+  const addYoutubeVideo = () => {
+    const url = window.prompt('Enter YouTube URL:');
+    if (url) {
+      editor.commands.setYoutubeVideo({
+        src: url,
+        width: 640,
+        height: 480,
+      });
+    }
+  };
+
+  const addTable = () => {
+    editor.chain().focus().insertTable({
+      rows: 3,
+      cols: 3,
+      withHeaderRow: true
+    }).run();
+  };
+
   const handleSendMessage = () => {
-    if (newMessage.trim() === "") return;
+    if (!newMessage.trim()) return;
 
-    // Add user message
-    setMessages(prev => [...prev, { text: newMessage, sender: "user" }]);
+    setMessages(prev => [...prev, {
+      text: newMessage,
+      sender: "user"
+    }]);
     setNewMessage("");
+    editor.commands.clearContent();
 
-    // Simulate bot response after a short delay
     setTimeout(() => {
       setMessages(prev => [...prev, {
-        text: "Thanks for your message! Our team will get back to you soon.",
+        text: "We've received your message with attachments!",
         sender: "support"
       }]);
     }, 1000);
+  };
+  const modalStyle = {
+    position: 'absolute',
+    top: '50%',
+    left: '50%',
+    transform: 'translate(-50%, -50%)',
+    width: isDesktop ? '60%' : '90%',
+    bgcolor: 'background.paper',
+    boxShadow: 24,
+    p: 4,
+    borderRadius: '8px',
+    maxHeight: '90vh',
+    overflowY: 'auto'
+  };
+
+  const TaskForm = ({ handleClose }) => {
+    const theme = useTheme();
+    const isNonMobile = useMediaQuery("(max-width:600px)");
+    const colors = tokens(theme.palette.mode);
+
+    const handleFormSubmit = (values) => {
+      console.log("Form Data:", values);
+      alert('Task created successfully!');
+      handleClose();
+    };
+
+    const initialValues = {
+      taskname: "",
+      taskowner: "",
+      description: "",
+      priority: "",
+    };
+
+    const checkoutSchema = yup.object().shape({
+      taskname: yup.string().required("Required"),
+      taskowner: yup.string().required("Required"),
+      description: yup.string().required("Required"),
+      priority: yup.string().required("Required"),
+    });
+
+    const textFieldStyles = {
+      "& .MuiOutlinedInput-root": {
+        borderRadius: "8px",
+        border: "1px solid #ccc",
+        backgroundColor: "#ffffff",
+        boxShadow: "2px 2px 5px rgba(0, 0, 0, 0.1)",
+        "&:hover": {
+          borderColor: "#999",
+          boxShadow: "4px 4px 8px rgba(0, 0, 0, 0.15)",
+        },
+        padding: "8px 12px",
+        height: "50px",
+      },
+      "& .MuiInputLabel-root": {
+        color: "#555",
+      },
+      "& .MuiOutlinedInput-notchedOutline": {
+        border: "none",
+      },
+    };
+
+    const priorityOptions = ["Urgent", "High", "Low"];
+
+    return (
+      <Box m="15px" sx={{ backgroundColor: "#ffffff", padding: "20px" }}>
+        <Formik
+          initialValues={initialValues}
+          validationSchema={checkoutSchema}
+          onSubmit={handleFormSubmit}
+        >
+          {({ values, errors, touched, handleBlur, handleChange, handleSubmit, setFieldValue }) => (
+            <form onSubmit={handleSubmit}>
+              <Box
+                display="grid"
+                gap="20px"
+                gridTemplateColumns={isNonMobile ? "repeat(1, minmax(0, 1fr))" : "repeat(3, minmax(0, 1fr))"}
+                sx={{
+                  "& > div": { gridColumn: isNonMobile ? "span 1" : undefined },
+                  backgroundColor: "#ffffff",
+                  marginTop: "20px"
+                }}
+              >
+                <TextField
+                  fullWidth
+                  variant="outlined"
+                  label="Task Name"
+                  name="taskname"
+                  value={values.taskname}
+                  onChange={handleChange}
+                  onBlur={handleBlur}
+                  error={!!touched.taskname && !!errors.taskname}
+                  helperText={touched.taskname && errors.taskname}
+                  sx={{ ...textFieldStyles, gridColumn: "span 1" }}
+                />
+
+                <TextField
+                  fullWidth
+                  variant="outlined"
+                  label="Task Owner"
+                  name="taskowner"
+                  value={values.taskowner}
+                  onChange={handleChange}
+                  onBlur={handleBlur}
+                  error={!!touched.taskowner && !!errors.taskowner}
+                  helperText={touched.taskowner && errors.taskowner}
+                  sx={{ ...textFieldStyles, gridColumn: "span 1" }}
+                />
+            
+                <Autocomplete
+                  fullWidth
+                  options={priorityOptions}
+                  value={values.priority || null}
+                  onChange={(event, newValue) => {
+                    setFieldValue("priority", newValue || "");
+                  }}
+                  renderInput={(params) => (
+                    <TextField
+                      {...params}
+                      label="Priority"
+                      sx={textFieldStyles}
+                      error={!!touched.priority && !!errors.priority}
+                      helperText={touched.priority && errors.priority}
+                    />
+                  )}
+                  sx={{
+                    gridColumn: "span 1",
+                    '& .MuiAutocomplete-listbox': {
+                      maxHeight: '200px',
+                      padding: 0,
+                      '& .MuiAutocomplete-option': {
+                        minHeight: '32px',
+                        padding: '4px 16px',
+                      }
+                    }
+                  }}
+                  freeSolo
+                  forcePopupIcon
+                  popupIcon={<ArrowDropDownIcon />}
+                />
+
+                <TextField
+                  fullWidth
+                  variant="outlined"
+                  label="Description"
+                  name="description"
+                  value={values.description}
+                  onChange={handleChange}
+                  onBlur={handleBlur}
+                  error={!!touched.description && !!errors.description}
+                  helperText={touched.description && errors.description}
+                  multiline
+                  rows={4}
+                  sx={{ 
+                      ...textFieldStyles, 
+                      gridColumn: "span 3",
+                      "& .MuiOutlinedInput-root": {
+                      ...textFieldStyles["& .MuiOutlinedInput-root"],
+                      height: "auto",
+                      minHeight: "120px",
+                      alignItems: "flex-start"
+                      }
+                  }}
+                />
+              </Box>
+
+              <Box display="flex" justifyContent="flex-end" mt="20px" gap={2}>
+            
+                <Button
+                  type="submit"
+                  variant="contained"
+                  sx={{
+                    padding: "12px 24px",
+                    fontSize: "14px",
+                    fontWeight: "bold",
+                    borderRadius: "8px",
+                    boxShadow: "3px 3px 6px rgba(0, 0, 0, 0.2)",
+                    transition: "0.3s",
+                    backgroundColor: colors.blueAccent[700],
+                    color: "#ffffff",
+                    textTransform: "none",
+                    "&:hover": { 
+                      backgroundColor: colors.blueAccent[600], 
+                      boxShadow: "5px 5px 10px rgba(0, 0, 0, 0.3)" 
+                    },
+                  }}
+                >
+                  Create Task
+                </Button>
+              </Box>
+            </form>
+          )}
+        </Formik>
+      </Box>
+    );
   };
 
   const customerManagers = [
@@ -144,6 +435,12 @@ const TicketDetails = () => {
     "Urgent",
     "High",
     "Low",
+  ];
+
+  const status = [
+    "Peding",
+    "Processing",
+    "Closed",
   ];
   return (
     <Box sx={{
@@ -295,25 +592,77 @@ const TicketDetails = () => {
                 )}
 
 
-
+                {/* 
                 {isEditing ? (
                   <Box>
                     <Typography variant="subtitle2" sx={{ color: "#555", fontWeight: "bold" }}>Status</Typography>
-                    {/* <Typography>{values.status}</Typography> */}
+                
                     <TextField
                       fullWidth
                       placeholder="Type your message..."
                       size="small"
                       variant="outlined"
                       value={values.status}
-                    // onChange={(e) => setNewMessage(e.target.value)}
-                    // onKeyPress={(e) => e.key === "Enter" && handleSendMessage()}
+   
                     />
                   </Box>
                 ) : (
                   <Box>
                     <Typography variant="subtitle2" sx={{ color: "#555", fontWeight: "bold" }}>Status</Typography>
                     <Typography>{values.status}</Typography>
+                  </Box>
+                )} */}
+
+
+
+                {isEditing ? (
+                  <Box sx={{ display: "flex", flexDirection: "column" }}>
+                    <Typography variant="subtitle2" sx={{ color: "#555", fontWeight: "bold", marginBottom: "5px" }}>
+                      Status
+                    </Typography>
+                    <Autocomplete
+                      fullWidth
+                      options={status}
+                      value={values.status || null}
+                      onChange={(event, newValue) => {
+                        setFieldValue("priority", newValue || "");
+                      }}
+                      renderInput={(params) => (
+                        <TextField
+                          {...params}
+                          sx={{
+                            display: isEditing ? "block" : "none",
+                            '& .MuiInputBase-root': {  // Target the input container
+                              height: '40px',          // Adjust input height
+                            }
+                          }}
+                          error={!!touched.status && !!errors.status}
+                          helperText={touched.status && errors.status}
+                          disabled={!isEditing}
+                        />
+                      )}
+                      disabled={!isEditing}
+                      sx={{
+                        gridColumn: "span 1",
+                        '& .MuiAutocomplete-listbox': {  // Target the dropdown list
+                          maxHeight: '200px',           // Set maximum height
+                          padding: 0,                   // Remove default padding
+                          '& .MuiAutocomplete-option': { // Target each option
+                            minHeight: '32px',          // Reduce option height
+                            padding: '4px 16px',        // Adjust padding
+                          }
+                        }
+                      }}
+                      freeSolo
+                      forcePopupIcon
+                      popupIcon={<ArrowDropDownIcon />}
+                    />
+                  </Box>
+                ) : (
+                  <Box>
+                    <Typography variant="subtitle2" sx={{ color: "#555", fontWeight: "bold" }}>Status</Typography>
+                    <Typography sx={{ color: getExperienceColor(values.priority) }}>{values.status}</Typography>
+
                   </Box>
                 )}
 
@@ -512,9 +861,33 @@ const TicketDetails = () => {
                       },
                     }}
                   >
-
+ 
                     Edit
                   </Button> */}
+
+<Box>
+        <Button
+          variant="contained"
+          onClick={() => setOpenTaskModal(true)}
+          sx={{
+            padding: "12px 24px",
+            fontSize: "14px",
+            fontWeight: "bold",
+            borderRadius: "8px",
+            boxShadow: "3px 3px 6px rgba(0, 0, 0, 0.2)",
+            transition: "0.3s",
+            backgroundColor: colors.blueAccent[700],
+            color: "#ffffff",
+            textTransform: "none",
+            "&:hover": {
+              backgroundColor: colors.blueAccent[600],
+              boxShadow: "5px 5px 10px rgba(0, 0, 0, 0.3)"
+            },
+          }}
+        >
+          Add Task
+        </Button>
+      </Box>
                   {isEditing ? (
                     <Box sx={{ display: "flex", gap: 2 }}>
                       <Button
@@ -586,6 +959,22 @@ const TicketDetails = () => {
                       </Button>
                     )}
                 </Box>
+
+
+      <Modal
+        open={openTaskModal}
+        onClose={() => setOpenTaskModal(false)}
+        aria-labelledby="task-modal-title"
+        aria-describedby="task-modal-description"
+      >
+        <Box sx={modalStyle}>
+          <Typography id="task-modal-title" variant="h5" component="h2" sx={{ mb: 3 }}>
+            Create New Task
+          </Typography>
+          <TaskForm handleClose={() => setOpenTaskModal(false)} />
+        </Box>
+      </Modal>
+
               </Box>
             </form>
           )}
@@ -604,206 +993,173 @@ const TicketDetails = () => {
         maxWidth: isLargeScreen ? "40%" : "100%",
         width: isLargeScreen ? "40%" : "100%",
       }}>
-        {/* Customer Care Section */}
-
-
-        {/* Customer Chat Section */}
+        {/* Chat Section */}
         <Box sx={{
           p: 2,
           backgroundColor: "#f5f5f5",
-          borderRadius: "8px"
+          borderRadius: "8px",
+          display: 'flex',
+          flexDirection: 'column',
+          minHeight: isMobile ? '550px' : "", // Minimum height for chat section
+          maxHeight: isMobile ? '600px' : '620px' // Increased overall height
         }}>
-          <Typography variant="h6" sx={{ mb: 1, fontWeight: "bold" }}> Chat</Typography>
-          <Typography sx={{ mb: 2 }}>Chat with our support team </Typography>
+          <Typography variant="h6" sx={{ mb: 1, fontWeight: "bold" }}> Discussions</Typography>
+          <Typography sx={{ mb: 2, color: colors.grey[600] }}>Discuss with Customer Support</Typography>
+
+          {/* Messages Display */}
           <Box sx={{
-            height: "200px",
+            flex: 1,
             backgroundColor: "white",
             borderRadius: "4px",
             p: 2,
             mb: 2,
             border: "1px solid #ddd",
-            overflowY: "auto"
+            overflowY: "auto",
+            minHeight: '200px', // Minimum height for messages
+            maxHeight: '800px' // Fixed height for messages
           }}>
             {messages.map((message, index) => (
-              <Box
-                key={index}
-                sx={{
-                  textAlign: message.sender === "user" ? "right" : "left",
-                  mb: 2
-                }}
-              >
-                <Box
-                  sx={{
-                    display: "inline-block",
-                    p: 1.5,
-                    borderRadius: "4px",
-                    backgroundColor: message.sender === "user"
-                      ? colors.blueAccent[100]
-                      : "#f0f0f0",
-                    maxWidth: "80%",
-                    wordWrap: "break-word"
-                  }}
-                >
-                  <Typography variant="body2">{message.text}</Typography>
-                </Box>
-                <Typography
-                  variant="caption"
-                  sx={{
-                    display: "block",
-                    color: colors.grey[600],
-                    mt: 0.5
-                  }}
-                >
+              <Box key={index} sx={{ mb: 2 }}>
+                <Typography variant="caption" sx={{ color: colors.grey[600] }}>
                   {message.sender === "user" ? "You" : "Support"}
                 </Typography>
+                <Box
+                  sx={{
+                    p: 1.5,
+                    borderRadius: 1,
+                    bgcolor: message.sender === "user"
+                      ? colors.blueAccent[100]
+                      : "#f0f0f0",
+                    display: 'inline-block'
+                  }}
+                  dangerouslySetInnerHTML={{ __html: message.text }}
+                />
               </Box>
             ))}
           </Box>
-          <Box sx={{ display: "flex", gap: 1 }}>
-            {/* <TextField 
-      fullWidth 
-      placeholder="Type your message..." 
-      size="small"
-      variant="outlined"
-      value={newMessage}
-      onChange={(e) => setNewMessage(e.target.value)}
-      onKeyPress={(e) => e.key === "Enter" && handleSendMessage()}
-    /> */}
 
-            <JoditEditor
-              value={newMessage}
-              onChange={(content) => setNewMessage(content)}
-              config={{
-                readonly: false,
-                toolbarButtonSize: "small",
-                showCharsCounter: false,
-                showWordsCounter: false,
-                showXPathInStatusbar: false,
-                buttons: [
-                  'bold',
-                  'italic',
-                  'underline',
-                  'strikethrough',
-                  '|',
-                  'ul',
-                  'ol',
-                  '|',
-                  'font',
-                  'fontsize',
-                  'paragraph',
-                  '|',
-                  'align',
-                  '|',
-                  'link',
-                  'file',
-                  'image',
-                  'media',
-                  'table',
-                  '|',
-                  'quote'
-                ],
-                buttonsMD: [
-                  'bold',
-                  'italic',
-                  'underline',
-                  'strikethrough',
-                  '|',
-                  'ul',
-                  'ol',
-                  '|',
-                  'font',
-                  'fontsize',
-                  'paragraph',
-                  '|',
-                  'align',
-                  '|',
-                  'link',
-                  'file',
-                  'image',
-                  'media',
-                  'table',
-                  '|',
-                  'quote'
-                ],
-                buttonsSM: [
-                  'bold',
-                  'italic',
-                  'underline',
-                  'strikethrough',
-                  '|',
-                  'ul',
-                  'ol',
-                  '|',
-                  'font',
-                  'fontsize',
-                  'paragraph',
-                  '|',
-                  'align',
-                  '|',
-                  'link',
-                  'file',
-                  'image',
-                  'media',
-                  'table',
-                  '|',
-                  'quote'
-                ],
-                buttonsXS: [
-                  'bold',
-                  'italic',
-                  'underline',
-                  'strikethrough',
-                  '|',
-                  'ul',
-                  'ol',
-                  '|',
-                  'font',
-                  'fontsize',
-                  'paragraph',
-                  '|',
-                  'align',
-                  '|',
-                  'link',
-                  'file',
-                  'image',
-                  'media',
-                  'table',
-                  '|',
-                  'quote'
-                ],
-                removeButtons: [
-                  'source',
-                  'fullsize',
-                  'print',
-                  'about',
-                  'outdent',
-                  'indent',
-                  'copyformat',
-                  'hr',
-                  'eraser',
-                  'dots',
-                  'brush',
-                  'symbol',
-                  'cut',
-                  'selectall'
-                ]
-              }}
-            />
-            <Button
-              variant="contained"
-              sx={{
-                backgroundColor: colors.blueAccent[700],
-                color: "#ffffff",
-                '&:hover': { backgroundColor: colors.blueAccent[600] },
-                textTransform: 'none'
-              }}
-              onClick={handleSendMessage}
-              disabled={!newMessage.trim()}
-            >
-              Send
-            </Button>
+          {/* Tiptap Editor */}
+          <Box sx={{
+            backgroundColor: 'white',
+            borderRadius: '4px',
+            // border: `1px solid ${colors.grey[300]}`,
+            flexGrow: 1,
+            display: 'flex',
+            flexDirection: 'column'
+          }}>
+            {/* Toolbar */}
+            {editor && (
+              <Box sx={{
+                display: 'flex',
+                gap: 1,
+                p: 1,
+                borderBottom: `1px solid ${colors.grey[300]}`,
+                flexWrap: 'wrap'
+              }}>
+                <IconButton
+                  onClick={() => editor.chain().focus().toggleBold().run()}
+                  color={editor.isActive('bold') ? 'primary' : 'default'}
+                  size="small"
+                >
+                  <FormatBold fontSize="small" />
+                </IconButton>
+
+                <IconButton
+                  onClick={() => editor.chain().focus().toggleItalic().run()}
+                  color={editor.isActive('italic') ? 'primary' : 'default'}
+                  size="small"
+                >
+                  <FormatItalic fontSize="small" />
+                </IconButton>
+
+                <IconButton
+                  onClick={() => editor.chain().focus().toggleUnderline().run()}
+                  color={editor.isActive('underline') ? 'primary' : 'default'}
+                  size="small"
+                >
+                  <FormatUnderlined fontSize="small" />
+                </IconButton>
+
+                <IconButton
+                  onClick={() => editor.chain().focus().toggleBulletList().run()}
+                  color={editor.isActive('bulletList') ? 'primary' : 'default'}
+                  size="small"
+                >
+                  <FormatListBulleted fontSize="small" />
+                </IconButton>
+
+                <IconButton
+                  onClick={() => editor.chain().focus().toggleOrderedList().run()}
+                  color={editor.isActive('orderedList') ? 'primary' : 'default'}
+                  size="small"
+                >
+                  <FormatListNumbered fontSize="small" />
+                </IconButton>
+
+                <IconButton onClick={addImage} size="small">
+                  <InsertPhoto fontSize="small" />
+                </IconButton>
+
+                <IconButton onClick={addTable} size="small">
+                  <TableChart fontSize="small" />
+                </IconButton>
+
+                <IconButton onClick={addYoutubeVideo} size="small">
+                  <YouTube fontSize="small" />
+                </IconButton>
+              </Box>
+            )}
+
+            {/* Editor Content - Now with larger height */}
+            <Box sx={{ display: 'flex', flexDirection: 'row', }}>
+              <Box sx={{
+                flex: 1,
+                // overflowY: 'auto',
+                p: 2,
+                minHeight: '100px', // Minimum height
+                maxHeight: '100px', // Maximum height before scrolling
+                '& .tiptap': {
+                  minHeight: '200px', // Ensure the editor has enough space
+                  outline: 'none',
+                  '& p': {
+                    margin: 0,
+                    marginBottom: '0.5em'
+                  }
+                }
+              }}>
+                <EditorContent editor={editor} />
+              </Box>
+
+
+
+            </Box>
           </Box>
         </Box>
+
+        <Box sx={{
+          display: 'flex',
+          justifyContent: 'flex-end',
+          // p: 1,
+          // backgroundColor: "#f5f5f5",
+          // borderTop: `1px solid ${colors.grey[300]}`,
+          maxHeight: '100px',
+        }}>
+          <Button
+            variant="contained"
+            onClick={handleSendMessage}
+            disabled={!newMessage.trim()}
+            sx={{
+              backgroundColor: colors.blueAccent[700],
+              color: "#ffffff",
+              '&:hover': { backgroundColor: colors.blueAccent[600] },
+              textTransform: 'none',
+              minWidth: '100px'
+            }}
+          >
+            Send
+          </Button>
+        </Box>
+
 
       </Box>
     </Box>
