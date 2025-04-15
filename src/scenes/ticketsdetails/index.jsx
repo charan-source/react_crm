@@ -5,16 +5,6 @@ import * as yup from "yup";
 import React, { useMemo, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import download from 'downloadjs';
-// import JoditEditor from 'jodit-react';
-// import {Jodit} from 'jodit-pro';
-// import 'jodit-pro/es5/jodit.min.css';
-
-
-// import ReactQuill from 'react-quill';
-// import 'react-quill/dist/quill.snow.css';
-
-
-
 import {
   FormatBold, FormatItalic, FormatUnderlined,
   FormatListNumbered, FormatListBulleted,
@@ -28,29 +18,19 @@ import TableRow from '@tiptap/extension-table-row'
 import TableHeader from '@tiptap/extension-table-header'
 import TableCell from '@tiptap/extension-table-cell'
 import Youtube from '@tiptap/extension-youtube'
-
-
-
-
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
-// import { Block } from "@mui/icons-material";
-// import PhoneIcon from '@mui/icons-material/Phone';
-// import EmailIcon from '@mui/icons-material/Email';
-// import HelpIcon from '@mui/icons-material/Help';
 
 const TicketDetails = () => {
   const theme = useTheme();
   const isDesktop = useMediaQuery("(min-width:600px)");
   const isMobile = useMediaQuery("(max-width:484px)");
-  const isLargeScreen = useMediaQuery("(min-width:800px)");
+  const colors = tokens(theme.palette.mode);
   const location = useLocation();
   const [isDownloading, setIsDownloading] = useState(false);
   const [selectedFile, setSelectedFile] = useState(null);
   const [isEditing, setIsEditing] = useState(false);
-  const colors = tokens(theme.palette.mode);
+  const [isEditingsection2, setIsEditingsection2] = useState(false);
   const [openTaskModal, setOpenTaskModal] = useState(false);
-
-  // const editor = useRef(null);
 
   const ticket = useMemo(() => location.state?.ticket || {}, [location.state]);
 
@@ -130,39 +110,11 @@ const TicketDetails = () => {
     }
   };
 
-  // const config = {
-  //   readonly: false,
-  //   buttons: ['bold', 'italic', 'underline', 'strikethrough', '|', 'ul', 'ol', '|', 'link'],
-  // };
-
-  // Add these state variables at the top of your component
   const [messages, setMessages] = useState([
     { text: "Hello! How can I help you today?", sender: "support" }
   ]);
   const [newMessage, setNewMessage] = useState("");
-  // const [newMessage, setNewMessage] = useState("");
 
-
-  // Add this function to handle sending messages
-  // const config = {
-  //   readonly: false,
-  //   toolbar: false, // Hide toolbar for cleaner chat input
-  //   statusbar: false,
-  //   spellcheck: true,
-  //   enter: "br", // Enter creates <br> instead of <p>
-  //   defaultActionOnPaste: "insert_only_text",
-  //   buttons: [],
-  //   height: 100,
-  //   width: '100%',
-  //   style: {
-  //     background: '#fff',
-  //     color: '#333',
-  //     fontSize: '14px',
-  //     border: `1px solid ${colors.grey[300]}`,
-  //     borderRadius: '4px',
-  //     padding: '8px'
-  //   }
-  // };
   const editor = useEditor({
     extensions: [
       StarterKit,
@@ -227,6 +179,7 @@ const TicketDetails = () => {
       }]);
     }, 1000);
   };
+
   const modalStyle = {
     position: 'absolute',
     top: '50%',
@@ -392,7 +345,6 @@ const TicketDetails = () => {
               </Box>
 
               <Box display="flex" justifyContent="flex-end" mt="20px" gap={2}>
-            
                 <Button
                   type="submit"
                   variant="contained"
@@ -422,6 +374,27 @@ const TicketDetails = () => {
     );
   };
 
+  const textFieldStyles = {
+    "& .MuiOutlinedInput-root": {
+      borderRadius: "8px",
+      border: "1px solid #ccc",
+      backgroundColor: "#ffffff",
+      boxShadow: "2px 2px 5px rgba(0, 0, 0, 0.1)",
+      "&:hover": {
+        borderColor: "#999",
+        boxShadow: "4px 4px 8px rgba(0, 0, 0, 0.15)",
+      },
+      padding: "8px 12px",
+      height: "50px",
+    },
+    "& .MuiInputLabel-root": {
+      color: "#555",
+    },
+    "& .MuiOutlinedInput-notchedOutline": {
+      border: "none",
+    },
+  };
+
   const customerManagers = [
     "Rambabu",
     "Charan",
@@ -430,7 +403,6 @@ const TicketDetails = () => {
     "Ram",
   ];
 
-
   const priority = [
     "Urgent",
     "High",
@@ -438,28 +410,35 @@ const TicketDetails = () => {
   ];
 
   const status = [
-    "Peding",
+    "Pending",
     "Processing",
     "Closed",
   ];
+
   return (
     <Box sx={{
-      display: "flex",
-      flexDirection: isLargeScreen ? "row" : "column",
-      gap: 2,
-      p: isDesktop ? 3 : 2
+      display: 'grid',
+      gridTemplateColumns: {
+        xs: '1fr',
+        md: 'repeat(2, 1fr)'
+      },
+      gap: 3,
+      p: 2,
+      maxWidth: '100%',
+      overflow: 'hidden'
     }}>
       {/* First Column - Ticket Details */}
       <Box sx={{
         backgroundColor: "#ffffff",
         p: isDesktop ? 3 : 2,
         borderRadius: "8px",
-        flex: 1,
-        maxWidth: isLargeScreen ? "60%" : "100%",
-        width: isLargeScreen ? "60%" : "100%"
+        gridColumn: {
+          xs: '1 / -1',
+          md: '1 / 2'
+        }
       }}>
         <Formik initialValues={initialValues} validationSchema={checkoutSchema} onSubmit={handleFormSubmit}>
-          {({ values, setFieldValue, touched, errors }) => (
+          {({ values, setFieldValue, touched, errors, handleBlur, handleChange }) => (
             <form>
               <Box
                 display="grid"
@@ -508,8 +487,8 @@ const TicketDetails = () => {
                           {...params}
                           sx={{
                             display: isEditing ? "block" : "none",
-                            '& .MuiInputBase-root': {  // Target the input container
-                              height: '40px',          // Adjust input height
+                            '& .MuiInputBase-root': {
+                              height: '40px',
                             }
                           }}
                           error={!!touched.crmname && !!errors.crmname}
@@ -520,12 +499,12 @@ const TicketDetails = () => {
                       disabled={!isEditing}
                       sx={{
                         gridColumn: "span 1",
-                        '& .MuiAutocomplete-listbox': {  // Target the dropdown list
-                          maxHeight: '200px',           // Set maximum height
-                          padding: 0,                   // Remove default padding
-                          '& .MuiAutocomplete-option': { // Target each option
-                            minHeight: '32px',          // Reduce option height
-                            padding: '4px 16px',        // Adjust padding
+                        '& .MuiAutocomplete-listbox': {
+                          maxHeight: '200px',
+                          padding: 0,
+                          '& .MuiAutocomplete-option': {
+                            minHeight: '32px',
+                            padding: '4px 16px',
                           }
                         }
                       }}
@@ -535,11 +514,12 @@ const TicketDetails = () => {
                     />
                   </Box>
                 ) : (
-                  <Box sx={{ gridColumn: { xs: "auto", sm: "span 2", md: "auto" } }}>
+                  <Box>
                     <Typography variant="subtitle2" sx={{ color: "#555", fontWeight: "bold" }}>Customer Relationship Manager</Typography>
                     <Typography>{values.crmname}</Typography>
                   </Box>
                 )}
+
                 {isEditing ? (
                   <Box sx={{ display: "flex", flexDirection: "column" }}>
                     <Typography variant="subtitle2" sx={{ color: "#555", fontWeight: "bold", marginBottom: "5px" }}>
@@ -557,8 +537,8 @@ const TicketDetails = () => {
                           {...params}
                           sx={{
                             display: isEditing ? "block" : "none",
-                            '& .MuiInputBase-root': {  // Target the input container
-                              height: '40px',          // Adjust input height
+                            '& .MuiInputBase-root': {
+                              height: '40px',
                             }
                           }}
                           error={!!touched.priority && !!errors.priority}
@@ -569,12 +549,12 @@ const TicketDetails = () => {
                       disabled={!isEditing}
                       sx={{
                         gridColumn: "span 1",
-                        '& .MuiAutocomplete-listbox': {  // Target the dropdown list
-                          maxHeight: '200px',           // Set maximum height
-                          padding: 0,                   // Remove default padding
-                          '& .MuiAutocomplete-option': { // Target each option
-                            minHeight: '32px',          // Reduce option height
-                            padding: '4px 16px',        // Adjust padding
+                        '& .MuiAutocomplete-listbox': {
+                          maxHeight: '200px',
+                          padding: 0,
+                          '& .MuiAutocomplete-option': {
+                            minHeight: '32px',
+                            padding: '4px 16px',
                           }
                         }
                       }}
@@ -587,33 +567,8 @@ const TicketDetails = () => {
                   <Box>
                     <Typography variant="subtitle2" sx={{ color: "#555", fontWeight: "bold" }}>Priority</Typography>
                     <Typography sx={{ color: getExperienceColor(values.priority) }}>{values.priority}</Typography>
-
                   </Box>
                 )}
-
-
-                {/* 
-                {isEditing ? (
-                  <Box>
-                    <Typography variant="subtitle2" sx={{ color: "#555", fontWeight: "bold" }}>Status</Typography>
-                
-                    <TextField
-                      fullWidth
-                      placeholder="Type your message..."
-                      size="small"
-                      variant="outlined"
-                      value={values.status}
-   
-                    />
-                  </Box>
-                ) : (
-                  <Box>
-                    <Typography variant="subtitle2" sx={{ color: "#555", fontWeight: "bold" }}>Status</Typography>
-                    <Typography>{values.status}</Typography>
-                  </Box>
-                )} */}
-
-
 
                 {isEditing ? (
                   <Box sx={{ display: "flex", flexDirection: "column" }}>
@@ -625,15 +580,15 @@ const TicketDetails = () => {
                       options={status}
                       value={values.status || null}
                       onChange={(event, newValue) => {
-                        setFieldValue("priority", newValue || "");
+                        setFieldValue("status", newValue || "");
                       }}
                       renderInput={(params) => (
                         <TextField
                           {...params}
                           sx={{
                             display: isEditing ? "block" : "none",
-                            '& .MuiInputBase-root': {  // Target the input container
-                              height: '40px',          // Adjust input height
+                            '& .MuiInputBase-root': {
+                              height: '40px',
                             }
                           }}
                           error={!!touched.status && !!errors.status}
@@ -644,12 +599,12 @@ const TicketDetails = () => {
                       disabled={!isEditing}
                       sx={{
                         gridColumn: "span 1",
-                        '& .MuiAutocomplete-listbox': {  // Target the dropdown list
-                          maxHeight: '200px',           // Set maximum height
-                          padding: 0,                   // Remove default padding
-                          '& .MuiAutocomplete-option': { // Target each option
-                            minHeight: '32px',          // Reduce option height
-                            padding: '4px 16px',        // Adjust padding
+                        '& .MuiAutocomplete-listbox': {
+                          maxHeight: '200px',
+                          padding: 0,
+                          '& .MuiAutocomplete-option': {
+                            minHeight: '32px',
+                            padding: '4px 16px',
                           }
                         }
                       }}
@@ -662,10 +617,8 @@ const TicketDetails = () => {
                   <Box>
                     <Typography variant="subtitle2" sx={{ color: "#555", fontWeight: "bold" }}>Status</Typography>
                     <Typography sx={{ color: getExperienceColor(values.priority) }}>{values.status}</Typography>
-
                   </Box>
                 )}
-
 
                 <Box>
                   <Typography variant="subtitle2" sx={{ color: "#555", fontWeight: "bold" }}>Date</Typography>
@@ -676,7 +629,6 @@ const TicketDetails = () => {
                   <Typography variant="subtitle2" sx={{ color: "#555", fontWeight: "bold" }}>Time</Typography>
                   <Typography>{values.time}</Typography>
                 </Box>
-
 
                 <Box>
                   <Typography variant="subtitle2" sx={{ color: "#555", fontWeight: "bold" }}>Experience</Typography>
@@ -695,69 +647,12 @@ const TicketDetails = () => {
               </Box>
 
               <Box sx={{ mt: 3, display: "flex", flexDirection: "column", gap: 2 }}>
-                {/* Request Details Section with Edit Functionality */}
+                {/* Request Details Section */}
                 <Box>
                   <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                     <Typography variant="subtitle2" sx={{ color: "#555", fontWeight: "bold" }}>Request Details</Typography>
-                    {/* {!isEditing && (
-                      <Button
-                        variant="outlined"
-                        onClick={() => setIsEditing(true)}
-                        sx={{
-                          textTransform: 'none',
-                          color: colors.blueAccent[700],
-                          borderColor: colors.blueAccent[700],
-                          '&:hover': {
-                            backgroundColor: colors.blueAccent[50],
-                            borderColor: colors.blueAccent[700]
-                          }
-                        }}
-                      >
-                        Edit
-                      </Button>
-                    )} */}
                   </Box>
-
-                  {/* {!isEditing ? ( */}
                   <Typography sx={{ mt: 1, whiteSpace: 'pre-wrap' }}>{values.requestdetails}</Typography>
-                  {/* ) : (
-                    <>
-                      <Box sx={{ mt: 2 }}>
-                        <JoditEditor
-                          value={values.requestdetails}
-                          config={config}
-                          onChange={(newContent) => { }}
-                        />
-                      </Box>
-                      <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 2, mt: 2 }}>
-                        <Button
-                          variant="outlined"
-                          onClick={() => setIsEditing(false)}
-                          sx={{
-                            textTransform: 'none',
-                            color: colors.grey[700],
-                            borderColor: colors.grey[700]
-                          }}
-                        >
-                          Cancel
-                        </Button>
-                        <Button
-                          variant="contained"
-                          onClick={() => {
-                            // Handle save logic here
-                            setIsEditing(false);
-                          }}
-                          sx={{
-                            textTransform: 'none',
-                            backgroundColor: colors.blueAccent[700],
-                            '&:hover': { backgroundColor: colors.blueAccent[600] }
-                          }}
-                        >
-                          Save Changes
-                        </Button>
-                      </Box>
-                    </>
-                  )} */}
                 </Box>
 
                 {/* File Upload Section */}
@@ -819,6 +714,13 @@ const TicketDetails = () => {
                   </Button>
                 </Box>
 
+                {/* Task Fields */}
+           
+
+           
+
+          
+
                 {/* Action Buttons */}
                 <Box sx={{ display: "flex", justifyContent: "space-between", gap: 2, mt: 1 }}>
                   <Button
@@ -842,52 +744,8 @@ const TicketDetails = () => {
                     Delete
                   </Button>
 
-                  {/* <Button
-                    variant="contained"
-                    onClick={setIsEditing}
-                    sx={{
-                      padding: "12px 24px",
-                      fontSize: "14px",
-                      fontWeight: "bold",
-                      borderRadius: "8px",
-                      boxShadow: "3px 3px 6px rgba(0, 0, 0, 0.2)",
-                      transition: "0.3s",
-                      backgroundColor: colors.blueAccent[700],
-                      color: "#ffffff",
-                      textTransform: "none",
-                      "&:hover": {
-                        backgroundColor: colors.blueAccent[600],
-                        boxShadow: "5px 5px 10px rgba(0, 0, 0, 0.3)"
-                      },
-                    }}
-                  >
- 
-                    Edit
-                  </Button> */}
 
-<Box>
-        <Button
-          variant="contained"
-          onClick={() => setOpenTaskModal(true)}
-          sx={{
-            padding: "12px 24px",
-            fontSize: "14px",
-            fontWeight: "bold",
-            borderRadius: "8px",
-            boxShadow: "3px 3px 6px rgba(0, 0, 0, 0.2)",
-            transition: "0.3s",
-            backgroundColor: colors.blueAccent[700],
-            color: "#ffffff",
-            textTransform: "none",
-            "&:hover": {
-              backgroundColor: colors.blueAccent[600],
-              boxShadow: "5px 5px 10px rgba(0, 0, 0, 0.3)"
-            },
-          }}
-        >
-          Add Task
-        </Button>
-      </Box>
+                    
                   {isEditing ? (
                     <Box sx={{ display: "flex", gap: 2 }}>
                       <Button
@@ -933,48 +791,44 @@ const TicketDetails = () => {
                         Save
                       </Button>
                     </Box>
-                  ) :
-                    (
-                      <Button
-                        variant="contained"
-                        onClick={setIsEditing}
-                        sx={{
-                          padding: "12px 24px",
-                          fontSize: "14px",
-                          fontWeight: "bold",
-                          borderRadius: "8px",
-                          boxShadow: "3px 3px 6px rgba(0, 0, 0, 0.2)",
-                          transition: "0.3s",
-                          backgroundColor: colors.blueAccent[700],
-                          color: "#ffffff",
-                          textTransform: "none",
-                          "&:hover": {
-                            backgroundColor: colors.blueAccent[600],
-                            boxShadow: "5px 5px 10px rgba(0, 0, 0, 0.3)"
-                          },
-                        }}
-                      >
-
-                        Edit
-                      </Button>
-                    )}
+                  ) : (
+                    <Button
+                      variant="contained"
+                      onClick={() => setIsEditing(true)}
+                      sx={{
+                        padding: "12px 24px",
+                        fontSize: "14px",
+                        fontWeight: "bold",
+                        borderRadius: "8px",
+                        boxShadow: "3px 3px 6px rgba(0, 0, 0, 0.2)",
+                        transition: "0.3s",
+                        backgroundColor: colors.blueAccent[700],
+                        color: "#ffffff",
+                        textTransform: "none",
+                        "&:hover": {
+                          backgroundColor: colors.blueAccent[600],
+                          boxShadow: "5px 5px 10px rgba(0, 0, 0, 0.3)"
+                        },
+                      }}
+                    >
+                      Edit
+                    </Button>
+                  )}
                 </Box>
 
-
-      <Modal
-        open={openTaskModal}
-        onClose={() => setOpenTaskModal(false)}
-        aria-labelledby="task-modal-title"
-        aria-describedby="task-modal-description"
-      >
-        <Box sx={modalStyle}>
-          <Typography id="task-modal-title" variant="h5" component="h2" sx={{ mb: 3 }}>
-            Create New Task
-          </Typography>
-          <TaskForm handleClose={() => setOpenTaskModal(false)} />
-        </Box>
-      </Modal>
-
+                <Modal
+                  open={openTaskModal}
+                  onClose={() => setOpenTaskModal(false)}
+                  aria-labelledby="task-modal-title"
+                  aria-describedby="task-modal-description"
+                >
+                  <Box sx={modalStyle}>
+                    <Typography id="task-modal-title" variant="h5" component="h2" sx={{ mb: 3 }}>
+                      Create New Task
+                    </Typography>
+                    <TaskForm handleClose={() => setOpenTaskModal(false)} />
+                  </Box>
+                </Modal>
               </Box>
             </form>
           )}
@@ -986,12 +840,13 @@ const TicketDetails = () => {
         backgroundColor: "#ffffff",
         p: isDesktop ? 3 : 2,
         borderRadius: "8px",
-        flex: 1,
-        display: "flex",
-        flexDirection: "column",
-        gap: 3,
-        maxWidth: isLargeScreen ? "40%" : "100%",
-        width: isLargeScreen ? "40%" : "100%",
+        gridColumn: {
+          xs: '1 / -1',
+          md: '2 / 3'
+        },
+        display: 'flex',
+        flexDirection: 'column',
+        gap: 3
       }}>
         {/* Chat Section */}
         <Box sx={{
@@ -1000,8 +855,8 @@ const TicketDetails = () => {
           borderRadius: "8px",
           display: 'flex',
           flexDirection: 'column',
-          minHeight: isMobile ? '550px' : "", // Minimum height for chat section
-          maxHeight: isMobile ? '600px' : '620px' // Increased overall height
+          minHeight: isMobile ? '550px' : "",
+          maxHeight: isMobile ? '600px' : '620px'
         }}>
           <Typography variant="h6" sx={{ mb: 1, fontWeight: "bold" }}> Discussions</Typography>
           <Typography sx={{ mb: 2, color: colors.grey[600] }}>Discuss with Customer Support</Typography>
@@ -1015,8 +870,8 @@ const TicketDetails = () => {
             mb: 2,
             border: "1px solid #ddd",
             overflowY: "auto",
-            minHeight: '200px', // Minimum height for messages
-            maxHeight: '800px' // Fixed height for messages
+            minHeight: '200px',
+            maxHeight: '800px'
           }}>
             {messages.map((message, index) => (
               <Box key={index} sx={{ mb: 2 }}>
@@ -1042,7 +897,6 @@ const TicketDetails = () => {
           <Box sx={{
             backgroundColor: 'white',
             borderRadius: '4px',
-            // border: `1px solid ${colors.grey[300]}`,
             flexGrow: 1,
             display: 'flex',
             flexDirection: 'column'
@@ -1110,16 +964,15 @@ const TicketDetails = () => {
               </Box>
             )}
 
-            {/* Editor Content - Now with larger height */}
-            <Box sx={{ display: 'flex', flexDirection: 'row', }}>
+            {/* Editor Content */}
+            <Box sx={{ display: 'flex', flexDirection: 'row' }}>
               <Box sx={{
                 flex: 1,
-                // overflowY: 'auto',
                 p: 2,
-                minHeight: '100px', // Minimum height
-                maxHeight: '100px', // Maximum height before scrolling
+                minHeight: '100px',
+                maxHeight: '100px',
                 '& .tiptap': {
-                  minHeight: '200px', // Ensure the editor has enough space
+                  minHeight: '200px',
                   outline: 'none',
                   '& p': {
                     margin: 0,
@@ -1129,9 +982,6 @@ const TicketDetails = () => {
               }}>
                 <EditorContent editor={editor} />
               </Box>
-
-
-
             </Box>
           </Box>
         </Box>
@@ -1139,9 +989,6 @@ const TicketDetails = () => {
         <Box sx={{
           display: 'flex',
           justifyContent: 'flex-end',
-          // p: 1,
-          // backgroundColor: "#f5f5f5",
-          // borderTop: `1px solid ${colors.grey[300]}`,
           maxHeight: '100px',
         }}>
           <Button
@@ -1159,9 +1006,235 @@ const TicketDetails = () => {
             Send
           </Button>
         </Box>
-
-
       </Box>
+
+
+
+      {/* Third Column - Customer Support */}
+{/* Third Column - Task Management */}
+<Box sx={{
+  backgroundColor: "#ffffff",
+  p: isDesktop ? 3 : 2,
+  borderRadius: "8px",
+  gridColumn: {
+    xs: '1 / -1',
+    md: '1 / 2'
+  },
+  mt: { xs: 3, md: 0 } // Add margin top on mobile only
+}}>
+  <Formik initialValues={initialValues} validationSchema={checkoutSchema} onSubmit={handleFormSubmit}>
+    {({ values, setFieldValue, touched, errors, handleBlur, handleChange }) => (
+      <form>
+        <Box sx={{ display: "flex", flexDirection: "column", gap: 3 }}>
+          {/* Task Fields Section */}
+          <Box sx={{
+            display: "grid",
+            gap: 2,
+            gridTemplateColumns: {
+              xs: "1fr",
+              sm: "repeat(2, 1fr)",
+              md: "1fr"
+            },
+            alignItems: "center"
+          }}>
+            <Box>
+              <Typography variant="subtitle2" sx={{ color: "#555", fontWeight: "bold" }}>Task 1</Typography>
+              {isEditingsection2 ? (
+              <TextField
+                fullWidth
+                variant="outlined"
+                name="task1"
+                value={values.task1 || ""}
+                onChange={handleChange}
+                onBlur={handleBlur}
+                error={!!touched.task1 && !!errors.task1}
+                helperText={touched.task1 && errors.task1}
+                sx={textFieldStyles}
+              />
+              ) : (
+                <Typography>{values.task1}</Typography>
+              )}
+            </Box>
+
+            <Box>
+              <Typography variant="subtitle2" sx={{ color: "#555", fontWeight: "bold" }}>Task 2</Typography>
+              {isEditingsection2 ? (
+              <TextField
+                fullWidth
+                variant="outlined"
+                name="task2"
+                value={values.task2 || ""}
+                onChange={handleChange}
+                onBlur={handleBlur}
+                error={!!touched.task2 && !!errors.task2}
+                helperText={touched.task2 && errors.task2}
+                sx={textFieldStyles}
+              />
+              ) : (
+                <Typography>{values.task2}</Typography>
+              )}
+            </Box>
+
+            <Box>
+              <Typography variant="subtitle2" sx={{ color: "#555", fontWeight: "bold" }}>Task 3</Typography>
+              {isEditingsection2 ? (
+              <TextField
+                fullWidth
+                variant="outlined"
+                name="task3"
+                value={values.task3 || ""}
+                onChange={handleChange}
+                onBlur={handleBlur}
+                error={!!touched.task3 && !!errors.task3}
+                helperText={touched.task3 && errors.task3}
+                sx={textFieldStyles}
+              />
+              ) : (
+                <Typography>{values.task3}</Typography>
+              )}
+            </Box>
+          </Box>
+
+          {/* Action Buttons */}
+          <Box sx={{ 
+            display: "flex", 
+            justifyContent: "flex-end", 
+            gap: 2,
+            flexWrap: 'wrap'
+          }}>
+            {!isEditingsection2 ? (
+              <Button
+                variant="contained"
+                sx={{
+                  padding: "12px 24px",
+                  fontSize: "14px",
+                  fontWeight: "bold",
+                  borderRadius: "8px",
+                  boxShadow: "3px 3px 6px rgba(0, 0, 0, 0.2)",
+                  transition: "0.3s",
+                  backgroundColor: colors.redAccent[400],
+                  color: "#ffffff",
+                  textTransform: "none",
+                  "&:hover": {
+                    backgroundColor: colors.redAccent[500],
+                    boxShadow: "5px 5px 10px rgba(0, 0, 0, 0.3)"
+                  },
+                }}
+              >
+                Delete
+              </Button>
+            ) : null}
+
+            {isEditingsection2 ? (
+              <>
+                <Button
+                  variant="contained"
+                  onClick={() => setIsEditingsection2(false)}
+                  sx={{
+                    padding: "12px 24px",
+                    fontSize: "14px",
+                    fontWeight: "bold",
+                    borderRadius: "8px",
+                    boxShadow: "3px 3px 6px rgba(0, 0, 0, 0.2)",
+                    transition: "0.3s",
+                    backgroundColor: colors.redAccent[400],
+                    color: "#ffffff",
+                    textTransform: "none",
+                    "&:hover": {
+                      backgroundColor: colors.redAccent[500],
+                      boxShadow: "5px 5px 10px rgba(0, 0, 0, 0.3)"
+                    },
+                  }}
+                >
+                  Cancel
+                </Button>
+
+                <Button
+                  variant="contained"
+                  onClick={() => setOpenTaskModal(true)}
+                  sx={{
+                    padding: "12px 24px",
+                    fontSize: "14px",
+                    fontWeight: "bold",
+                    borderRadius: "8px",
+                    boxShadow: "3px 3px 6px rgba(0, 0, 0, 0.2)",
+                    transition: "0.3s",
+                    backgroundColor: colors.blueAccent[700],
+                    color: "#ffffff",
+                    textTransform: "none",
+                    "&:hover": {
+                      backgroundColor: colors.blueAccent[600],
+                      boxShadow: "5px 5px 10px rgba(0, 0, 0, 0.3)"
+                    },
+                  }}
+                >
+                  Add Task
+                </Button>
+
+                <Button
+                  variant="contained"
+                  sx={{
+                    padding: "12px 24px",
+                    fontSize: "14px",
+                    fontWeight: "bold",
+                    borderRadius: "8px",
+                    boxShadow: "3px 3px 6px rgba(0, 0, 0, 0.2)",
+                    transition: "0.3s",
+                    backgroundColor: colors.blueAccent[700],
+                    color: "#ffffff",
+                    textTransform: "none",
+                    "&:hover": {
+                      backgroundColor: colors.blueAccent[600],
+                      boxShadow: "5px 5px 10px rgba(0, 0, 0, 0.3)"
+                    },
+                  }}
+                >
+                  Save
+                </Button>
+              </>
+            ) : (
+              <Button
+                variant="contained"
+                onClick={() => setIsEditingsection2(true)}
+                sx={{
+                  padding: "12px 24px",
+                  fontSize: "14px",
+                  fontWeight: "bold",
+                  borderRadius: "8px",
+                  boxShadow: "3px 3px 6px rgba(0, 0, 0, 0.2)",
+                  transition: "0.3s",
+                  backgroundColor: colors.blueAccent[700],
+                  color: "#ffffff",
+                  textTransform: "none",
+                  "&:hover": {
+                    backgroundColor: colors.blueAccent[600],
+                    boxShadow: "5px 5px 10px rgba(0, 0, 0, 0.3)"
+                  },
+                }}
+              >
+                Edit
+              </Button>
+            )}
+          </Box>
+        </Box>
+
+        <Modal
+          open={openTaskModal}
+          onClose={() => setOpenTaskModal(false)}
+          aria-labelledby="task-modal-title"
+          aria-describedby="task-modal-description"
+        >
+          <Box sx={modalStyle}>
+            <Typography id="task-modal-title" variant="h5" component="h2" sx={{ mb: 3 }}>
+              Create New Task
+            </Typography>
+            <TaskForm handleClose={() => setOpenTaskModal(false)} />
+          </Box>
+        </Modal>
+      </form>
+    )}
+  </Formik>
+</Box>
     </Box>
   );
 };
