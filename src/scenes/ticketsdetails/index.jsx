@@ -18,6 +18,7 @@ import TableRow from '@tiptap/extension-table-row'
 import TableHeader from '@tiptap/extension-table-header'
 import TableCell from '@tiptap/extension-table-cell'
 import Youtube from '@tiptap/extension-youtube'
+import { Underline } from '@tiptap/extension-underline';
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 
 const TicketDetails = () => {
@@ -118,6 +119,7 @@ const TicketDetails = () => {
   const editor = useEditor({
     extensions: [
       StarterKit,
+      Underline, // Add this line
       Image.configure({
         inline: true,
         allowBase64: true,
@@ -1052,7 +1054,7 @@ const TicketDetails = () => {
                 sx={textFieldStyles}
               />
               ) : (
-                <Typography>{values.task1}</Typography>
+                <Typography>first create customer manager</Typography>
               )}
             </Box>
 
@@ -1071,7 +1073,7 @@ const TicketDetails = () => {
                 sx={textFieldStyles}
               />
               ) : (
-                <Typography>{values.task2}</Typography>
+                <Typography>Second Create Relationship Manager</Typography>
               )}
             </Box>
 
@@ -1090,7 +1092,7 @@ const TicketDetails = () => {
                 sx={textFieldStyles}
               />
               ) : (
-                <Typography>{values.task3}</Typography>
+                <Typography>create Hob</Typography>
               )}
             </Box>
           </Box>
