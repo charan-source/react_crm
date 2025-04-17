@@ -29,7 +29,8 @@ const getActivePage = (pathname) => {
     pathname.includes("/profile") ||
     pathname.includes("/newExperiences") ||
     pathname.includes("/pendingExperiences") ||
-    pathname.includes("/resolvedExperiences")
+    pathname.includes("/resolvedExperiences") ||
+    pathname.includes("/taskdetails")
   ) {
     return "/"; // Ensure this matches the `to` prop of the Experiences Item
   }

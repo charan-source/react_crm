@@ -5,10 +5,14 @@ import * as yup from "yup";
 import React, { useMemo, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import download from 'downloadjs';
+import { DataGrid } from "@mui/x-data-grid";
 import {
   FormatBold, FormatItalic, FormatUnderlined,
   FormatListNumbered, FormatListBulleted,
-  InsertPhoto, TableChart, YouTube
+  InsertPhoto, TableChart, YouTube,
+  Check as CheckIcon,
+  Delete as DeleteIcon,
+  Add as AddIcon,
 } from '@mui/icons-material';
 import { useEditor, EditorContent } from '@tiptap/react'
 import StarterKit from '@tiptap/starter-kit'
@@ -20,6 +24,22 @@ import TableCell from '@tiptap/extension-table-cell'
 import Youtube from '@tiptap/extension-youtube'
 import { Underline } from '@tiptap/extension-underline';
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
+import { useNavigate } from "react-router-dom";
+
+
+
+const initialTickets = [
+  { id: 1, name: "Charan Palemala", status: "Pending", description: "this is not available", priority: "Urgent", ticketraise: "create a task 1", taskid: "1", date: "03-04-2025", time: "10:00 AM" },
+  { id: 2, name: "Charan Palemala", status: "Pending", description: "this is not available", priority: "Urgent", ticketraise: "create a task 2", taskid: "2", date: "03-04-2025", time: "10:00 AM" },
+  { id: 3, name: "Charan Palemala", status: "Pending", description: "this is not available", priority: "Urgent", ticketraise: "create a task 3", taskid: "3", date: "03-04-2025", time: "10:00 AM" },
+  { id: 4, name: "Charan Palemala", status: "Pending", description: "this is not available", priority: "Urgent", ticketraise: "create a task 4", taskid: "4", date: "03-04-2025", time: "10:00 AM" },
+  // { id: 5, name: "Charan Palemala", status: "Pending", description: "this is not available", priority: "Urgent", ticketraise: "create a ticket", taskid: "5", date: "03-04-2025", time: "10:00 AM" },
+  // { id: 6, name: "Charan Palemala", status: "Pending", description: "this is not available", priority: "Urgent", ticketraise: "create a ticket", taskid: "6", date: "03-04-2025", time: "10:00 AM" },
+  // { id: 7, name: "Charan Palemala", status: "Pending", description: "this is not available", priority: "Urgent", ticketraise: "create a ticket", taskid: "7", date: "03-04-2025", time: "10:00 AM" },
+  // { id: 8, name: "Charan Palemala", status: "Pending", description: "this is not available", priority: "Urgent", ticketraise: "create a ticket", taskid: "8", date: "03-04-2025", time: "10:00 AM" },
+  // { id: 9, name: "Charan Palemala", status: "Pending", description: "this is not available", priority: "Urgent", ticketraise: "create a ticket", taskid: "9", date: "03-04-2025", time: "10:00 AM" },
+
+];
 
 const TicketDetails = () => {
   const theme = useTheme();
@@ -30,9 +50,10 @@ const TicketDetails = () => {
   const [isDownloading, setIsDownloading] = useState(false);
   const [selectedFile, setSelectedFile] = useState(null);
   const [isEditing, setIsEditing] = useState(false);
-  const [isEditingsection2, setIsEditingsection2] = useState(false);
+  // const [isEditingsection2, setIsEditingsection2] = useState(false);
+  const navigate = useNavigate();
   const [openTaskModal, setOpenTaskModal] = useState(false);
-
+  const [shareEntireExperience, setshareEntireExperience] = useState(false);
   const ticket = useMemo(() => location.state?.ticket || {}, [location.state]);
 
   const getExperienceColor = (experience) => {
@@ -49,6 +70,45 @@ const TicketDetails = () => {
     const fullPhoneNumber = `${values.phoneCode}${values.PhoneNo}`;
     console.log("Form Data:", { ...values, fullPhoneNumber });
   };
+
+
+  const columns = [
+    { field: "id", headerName: "ID", flex: 0.4, headerClassName: "bold-header", disableColumnMenu: false, minWidth: 100 },
+    { field: "ticketraise", headerName: "Task name", flex: 1, headerClassName: "bold-header", disableColumnMenu: true, minWidth: 200 },
+    { field: "name", headerName: "Task owner", flex: 1, headerClassName: "bold-header", disableColumnMenu: true, minWidth: 150 },
+    { field: "status", headerName: "Status", flex: 1, headerClassName: "bold-header", disableColumnMenu: true, minWidth: 150 },
+    {
+      field: "actions",
+      headerName: "Action",
+      flex: 1,
+      headerClassName: "bold-header",
+      disableColumnMenu: true,
+      minWidth: 150,
+      renderCell: (params) => (
+        <Box sx={{ display: 'flex', gap: 1 }}>
+          <IconButton
+            onClick={handleCompleteTask(params.id)}
+            sx={{ color: "#ffffff", backgroundColor: "#0BDA51", width: "30px", height: "30px" }}
+            aria-label="complete"
+            disableRipple
+          >
+            <CheckIcon />
+          </IconButton>
+          <IconButton
+            onClick={handleDeleteTask(params.id)}
+            sx={{ color: "#ffffff", backgroundColor: "#FF2C2C", width: "30px", height: "30px" }}
+            disableRipple
+            aria-label="delete"
+
+          >
+            <DeleteIcon />
+          </IconButton>
+        </Box>
+      ),
+      sortable: false,
+      filterable: false,
+    },
+  ];
 
   const initialValues = {
     organization: ticket.organization || "",
@@ -182,7 +242,7 @@ const TicketDetails = () => {
     }, 1000);
   };
 
-  const modalStyle = {
+  const createtaskmodel = {
     position: 'absolute',
     top: '50%',
     left: '50%',
@@ -195,6 +255,41 @@ const TicketDetails = () => {
     maxHeight: '90vh',
     overflowY: 'auto'
   };
+
+
+
+
+  const assignmodel = {
+    position: 'absolute',
+    top: '50%',
+    left: '50%',
+    transform: 'translate(-50%, -50%)',
+    width: isDesktop ? '40%' : '90%',
+    bgcolor: 'background.paper',
+    boxShadow: 24,
+    p: 4,
+    borderRadius: '8px',
+    maxHeight: '90vh',
+    overflowY: 'auto'
+  };
+
+
+  const handleRowClick = (params) => {
+    navigate('/taskdetails', { state: { ticket: params.row } });
+  };
+
+  const handleCompleteTask = (id) => (event) => {
+    event.stopPropagation();
+    console.log("Task completed:", id);
+    // Add your complete task logic here
+  };
+
+  const handleDeleteTask = (id) => (event) => {
+    event.stopPropagation();
+    console.log("Task deleted:", id);
+    // Add your delete task logic here
+  };
+
 
   const TaskForm = ({ handleClose }) => {
     const theme = useTheme();
@@ -221,28 +316,33 @@ const TicketDetails = () => {
       priority: yup.string().required("Required"),
     });
 
-    const textFieldStyles = {
-      "& .MuiOutlinedInput-root": {
-        borderRadius: "8px",
-        border: "1px solid #ccc",
-        backgroundColor: "#ffffff",
-        boxShadow: "2px 2px 5px rgba(0, 0, 0, 0.1)",
-        "&:hover": {
-          borderColor: "#999",
-          boxShadow: "4px 4px 8px rgba(0, 0, 0, 0.15)",
-        },
-        padding: "8px 12px",
-        height: "50px",
-      },
-      "& .MuiInputLabel-root": {
-        color: "#555",
-      },
-      "& .MuiOutlinedInput-notchedOutline": {
-        border: "none",
-      },
-    };
+    // const textFieldStyles = {
+    //   "& .MuiOutlinedInput-root": {
+    //     borderRadius: "8px",
+    //     border: "1px solid #ccc",
+    //     backgroundColor: "#ffffff",
+    //     boxShadow: "2px 2px 5px rgba(0, 0, 0, 0.1)",
+    //     "&:hover": {
+    //       borderColor: "#999",
+    //       boxShadow: "4px 4px 8px rgba(0, 0, 0, 0.15)",
+    //     },
+    //     padding: "8px 12px",
+    //     height: "50px",
+    //   },
+    //   "& .MuiInputLabel-root": {
+    //     color: "#555",
+    //   },
+    //   "& .MuiOutlinedInput-notchedOutline": {
+    //     border: "none",
+    //   },
+    // };
 
     const priorityOptions = ["Urgent", "High", "Low"];
+
+
+
+    // Columns for DataGrid
+
 
     return (
       <Box m="15px" sx={{ backgroundColor: "#ffffff", padding: "20px" }}>
@@ -288,7 +388,7 @@ const TicketDetails = () => {
                   helperText={touched.taskowner && errors.taskowner}
                   sx={{ ...textFieldStyles, gridColumn: "span 1" }}
                 />
-            
+
                 <Autocomplete
                   fullWidth
                   options={priorityOptions}
@@ -333,15 +433,15 @@ const TicketDetails = () => {
                   helperText={touched.description && errors.description}
                   multiline
                   rows={4}
-                  sx={{ 
-                      ...textFieldStyles, 
-                      gridColumn: "span 3",
-                      "& .MuiOutlinedInput-root": {
+                  sx={{
+                    ...textFieldStyles,
+                    gridColumn: "span 3",
+                    "& .MuiOutlinedInput-root": {
                       ...textFieldStyles["& .MuiOutlinedInput-root"],
                       height: "auto",
                       minHeight: "120px",
                       alignItems: "flex-start"
-                      }
+                    }
                   }}
                 />
               </Box>
@@ -360,9 +460,9 @@ const TicketDetails = () => {
                     backgroundColor: colors.blueAccent[700],
                     color: "#ffffff",
                     textTransform: "none",
-                    "&:hover": { 
-                      backgroundColor: colors.blueAccent[600], 
-                      boxShadow: "5px 5px 10px rgba(0, 0, 0, 0.3)" 
+                    "&:hover": {
+                      backgroundColor: colors.blueAccent[600],
+                      boxShadow: "5px 5px 10px rgba(0, 0, 0, 0.3)"
                     },
                   }}
                 >
@@ -375,6 +475,153 @@ const TicketDetails = () => {
       </Box>
     );
   };
+
+
+
+
+
+
+
+// Assign to Customer Relationship Manager
+
+
+const AssignCrm = ({ handleClose }) => {
+  const theme = useTheme();
+  const isNonMobile = useMediaQuery("(max-width:600px)");
+  const colors = tokens(theme.palette.mode);
+
+  const handleFormSubmit = (values) => {
+    console.log("Form Data:", values);
+    alert('Task created successfully!');
+    handleClose();
+  };
+
+  const initialValues = {
+    crmids: "",
+    crmname: "",
+
+  };
+
+  const checkoutSchema = yup.object().shape({
+    crmids: yup.string().required("Required"),
+    crmname: yup.string().required("Required"),
+
+  });
+
+
+  const crmids = ["123456", "123456", "123456", "123456", "123456"];
+
+
+
+  // Columns for DataGrid
+
+
+  return (
+    <Box m="15px" sx={{ backgroundColor: "#ffffff", padding: "20px" }}>
+      <Formik
+        initialValues={initialValues}
+        validationSchema={checkoutSchema}
+        onSubmit={handleFormSubmit}
+      >
+        {({ values, errors, touched, handleBlur, handleChange, handleSubmit, setFieldValue }) => (
+          <form onSubmit={handleSubmit}>
+            <Box
+              display="grid"
+              gap="20px"
+              gridTemplateColumns={isNonMobile ? "repeat(1, minmax(0, 1fr))" : "repeat(1, minmax(0, 1fr))"}
+              sx={{
+                "& > div": { gridColumn: isNonMobile ? "span 1" : undefined },
+                backgroundColor: "#ffffff",
+                marginTop: "20px"
+              }}
+            >
+
+
+
+              <Autocomplete
+                fullWidth
+                options={crmids}
+                value={values.crmids || null}
+                onChange={(event, newValue) => {
+                  setFieldValue("priority", newValue || "");
+                }}
+                renderInput={(params) => (
+                  <TextField
+                    {...params}
+                    label="Select CRM ID"
+                    sx={textFieldStyles}
+                    error={!!touched.crmids && !!errors.crmids}
+                    helperText={touched.crmids && errors.crmids}
+                  />
+                )}
+                sx={{
+                  gridColumn: "span 1",
+                  '& .MuiAutocomplete-listbox': {
+                    maxHeight: '200px',
+                    padding: 0,
+                    '& .MuiAutocomplete-option': {
+                      minHeight: '32px',
+                      padding: '4px 16px',
+                    }
+                  }
+                }}
+                freeSolo
+                forcePopupIcon
+                popupIcon={<ArrowDropDownIcon />}
+              />
+
+           <TextField
+                fullWidth
+                variant="outlined"
+                label="CRM Name"
+                name="crmname"
+                value={values.crmname}
+                onChange={handleChange}
+                onBlur={handleBlur}
+                error={!!touched.crmname && !!errors.crmname}
+                helperText={touched.crmname && errors.crmname}
+                sx={{ ...textFieldStyles, gridColumn: "span 1" }}
+                disabled
+              />
+
+
+            </Box>
+
+            <Box display="flex" justifyContent="flex-end" mt="20px" gap={2}>
+              <Button
+                type="submit"
+                variant="contained"
+                sx={{
+                  padding: "12px 24px",
+                  fontSize: "14px",
+                  fontWeight: "bold",
+                  borderRadius: "8px",
+                  boxShadow: "3px 3px 6px rgba(0, 0, 0, 0.2)",
+                  transition: "0.3s",
+                  backgroundColor: colors.blueAccent[700],
+                  color: "#ffffff",
+                  textTransform: "none",
+                  "&:hover": {
+                    backgroundColor: colors.blueAccent[600],
+                    boxShadow: "5px 5px 10px rgba(0, 0, 0, 0.3)"
+                  },
+                }}
+              >
+                Assign
+              </Button>
+            </Box>
+          </form>
+        )}
+      </Formik>
+    </Box>
+  );
+};
+
+
+
+
+
+
 
   const textFieldStyles = {
     "& .MuiOutlinedInput-root": {
@@ -717,11 +964,11 @@ const TicketDetails = () => {
                 </Box>
 
                 {/* Task Fields */}
-           
 
-           
 
-          
+
+
+
 
                 {/* Action Buttons */}
                 <Box sx={{ display: "flex", justifyContent: "space-between", gap: 2, mt: 1 }}>
@@ -747,7 +994,7 @@ const TicketDetails = () => {
                   </Button>
 
 
-                    
+
                   {isEditing ? (
                     <Box sx={{ display: "flex", gap: 2 }}>
                       <Button
@@ -818,19 +1065,7 @@ const TicketDetails = () => {
                   )}
                 </Box>
 
-                <Modal
-                  open={openTaskModal}
-                  onClose={() => setOpenTaskModal(false)}
-                  aria-labelledby="task-modal-title"
-                  aria-describedby="task-modal-description"
-                >
-                  <Box sx={modalStyle}>
-                    <Typography id="task-modal-title" variant="h5" component="h2" sx={{ mb: 3 }}>
-                      Create New Task
-                    </Typography>
-                    <TaskForm handleClose={() => setOpenTaskModal(false)} />
-                  </Box>
-                </Modal>
+
               </Box>
             </form>
           )}
@@ -1012,231 +1247,228 @@ const TicketDetails = () => {
 
 
 
-      {/* Third Column - Customer Support */}
-{/* Third Column - Task Management */}
-<Box sx={{
-  backgroundColor: "#ffffff",
-  p: isDesktop ? 3 : 2,
-  borderRadius: "8px",
-  gridColumn: {
-    xs: '1 / -1',
-    md: '1 / 2'
-  },
-  mt: { xs: 3, md: 0 } // Add margin top on mobile only
-}}>
-  <Formik initialValues={initialValues} validationSchema={checkoutSchema} onSubmit={handleFormSubmit}>
-    {({ values, setFieldValue, touched, errors, handleBlur, handleChange }) => (
-      <form>
-        <Box sx={{ display: "flex", flexDirection: "column", gap: 3 }}>
-          {/* Task Fields Section */}
-          <Box sx={{
-            display: "grid",
-            gap: 2,
-            gridTemplateColumns: {
-              xs: "1fr",
-              sm: "repeat(2, 1fr)",
-              md: "1fr"
-            },
-            alignItems: "center"
-          }}>
-            <Box>
-              <Typography variant="subtitle2" sx={{ color: "#555", fontWeight: "bold" }}>Task 1</Typography>
-              {isEditingsection2 ? (
-              <TextField
-                fullWidth
-                variant="outlined"
-                name="task1"
-                value={values.task1 || ""}
-                onChange={handleChange}
-                onBlur={handleBlur}
-                error={!!touched.task1 && !!errors.task1}
-                helperText={touched.task1 && errors.task1}
-                sx={textFieldStyles}
-              />
-              ) : (
-                <Typography>first create customer manager</Typography>
-              )}
-            </Box>
+      {     /* Third Column - Task Management */}
+      <Box sx={{
+        backgroundColor: "#ffffff",
+        p: isDesktop ? 3 : 2,
+        borderRadius: "8px",
+        gridColumn: '1 / -1', // This makes it span all columns
+        mt: { xs: 3, md: 0 }
+      }}>
+        <Box sx={{ display: "flex", flexDirection: isMobile ? "column" :  "row"   , justifyContent: "flex-end", mb: 2, gap: 2 }}>
 
-            <Box>
-              <Typography variant="subtitle2" sx={{ color: "#555", fontWeight: "bold" }}>Task 2</Typography>
-              {isEditingsection2 ? (
-              <TextField
-                fullWidth
-                variant="outlined"
-                name="task2"
-                value={values.task2 || ""}
-                onChange={handleChange}
-                onBlur={handleBlur}
-                error={!!touched.task2 && !!errors.task2}
-                helperText={touched.task2 && errors.task2}
-                sx={textFieldStyles}
-              />
-              ) : (
-                <Typography>Second Create Relationship Manager</Typography>
-              )}
-            </Box>
+          <Button
+            variant="contained"
+            sx={{
+              background: colors.blueAccent[500],
+              fontWeight: "bold",
+              color: "#ffffff",
+              whiteSpace: "nowrap",
+              textTransform: "none",
+              // width: isMobile ? "60%" : "100%",
+              '&:hover': {
+                backgroundColor: colors.blueAccent[600],
+              }
+            }}
+            startIcon={<AddIcon />}
+            onClick={() => setshareEntireExperience(true)}
+          >
+            Assign To
+          </Button>
 
-            <Box>
-              <Typography variant="subtitle2" sx={{ color: "#555", fontWeight: "bold" }}>Task 3</Typography>
-              {isEditingsection2 ? (
-              <TextField
-                fullWidth
-                variant="outlined"
-                name="task3"
-                value={values.task3 || ""}
-                onChange={handleChange}
-                onBlur={handleBlur}
-                error={!!touched.task3 && !!errors.task3}
-                helperText={touched.task3 && errors.task3}
-                sx={textFieldStyles}
-              />
-              ) : (
-                <Typography>create Hob</Typography>
-              )}
-            </Box>
-          </Box>
-
-          {/* Action Buttons */}
-          <Box sx={{ 
-            display: "flex", 
-            justifyContent: "flex-end", 
-            gap: 2,
-            flexWrap: 'wrap'
-          }}>
-            {!isEditingsection2 ? (
-              <Button
-                variant="contained"
-                sx={{
-                  padding: "12px 24px",
-                  fontSize: "14px",
-                  fontWeight: "bold",
-                  borderRadius: "8px",
-                  boxShadow: "3px 3px 6px rgba(0, 0, 0, 0.2)",
-                  transition: "0.3s",
-                  backgroundColor: colors.redAccent[400],
-                  color: "#ffffff",
-                  textTransform: "none",
-                  "&:hover": {
-                    backgroundColor: colors.redAccent[500],
-                    boxShadow: "5px 5px 10px rgba(0, 0, 0, 0.3)"
-                  },
-                }}
-              >
-                Delete
-              </Button>
-            ) : null}
-
-            {isEditingsection2 ? (
-              <>
-                <Button
-                  variant="contained"
-                  onClick={() => setIsEditingsection2(false)}
-                  sx={{
-                    padding: "12px 24px",
-                    fontSize: "14px",
-                    fontWeight: "bold",
-                    borderRadius: "8px",
-                    boxShadow: "3px 3px 6px rgba(0, 0, 0, 0.2)",
-                    transition: "0.3s",
-                    backgroundColor: colors.redAccent[400],
-                    color: "#ffffff",
-                    textTransform: "none",
-                    "&:hover": {
-                      backgroundColor: colors.redAccent[500],
-                      boxShadow: "5px 5px 10px rgba(0, 0, 0, 0.3)"
-                    },
-                  }}
-                >
-                  Cancel
-                </Button>
-
-                <Button
-                  variant="contained"
-                  onClick={() => setOpenTaskModal(true)}
-                  sx={{
-                    padding: "12px 24px",
-                    fontSize: "14px",
-                    fontWeight: "bold",
-                    borderRadius: "8px",
-                    boxShadow: "3px 3px 6px rgba(0, 0, 0, 0.2)",
-                    transition: "0.3s",
-                    backgroundColor: colors.blueAccent[700],
-                    color: "#ffffff",
-                    textTransform: "none",
-                    "&:hover": {
-                      backgroundColor: colors.blueAccent[600],
-                      boxShadow: "5px 5px 10px rgba(0, 0, 0, 0.3)"
-                    },
-                  }}
-                >
-                  Add Task
-                </Button>
-
-                <Button
-                  variant="contained"
-                  sx={{
-                    padding: "12px 24px",
-                    fontSize: "14px",
-                    fontWeight: "bold",
-                    borderRadius: "8px",
-                    boxShadow: "3px 3px 6px rgba(0, 0, 0, 0.2)",
-                    transition: "0.3s",
-                    backgroundColor: colors.blueAccent[700],
-                    color: "#ffffff",
-                    textTransform: "none",
-                    "&:hover": {
-                      backgroundColor: colors.blueAccent[600],
-                      boxShadow: "5px 5px 10px rgba(0, 0, 0, 0.3)"
-                    },
-                  }}
-                >
-                  Save
-                </Button>
-              </>
-            ) : (
-              <Button
-                variant="contained"
-                onClick={() => setIsEditingsection2(true)}
-                sx={{
-                  padding: "12px 24px",
-                  fontSize: "14px",
-                  fontWeight: "bold",
-                  borderRadius: "8px",
-                  boxShadow: "3px 3px 6px rgba(0, 0, 0, 0.2)",
-                  transition: "0.3s",
-                  backgroundColor: colors.blueAccent[700],
-                  color: "#ffffff",
-                  textTransform: "none",
-                  "&:hover": {
-                    backgroundColor: colors.blueAccent[600],
-                    boxShadow: "5px 5px 10px rgba(0, 0, 0, 0.3)"
-                  },
-                }}
-              >
-                Edit
-              </Button>
-            )}
-          </Box>
+          <Button
+            variant="contained"
+            sx={{
+              background: colors.blueAccent[500],
+              fontWeight: "bold",
+              color: "#ffffff",
+              whiteSpace: "nowrap",
+              textTransform: "none",
+              // width: isMobile ? "60%" : "100%",
+              '&:hover': {
+                backgroundColor: colors.blueAccent[600],
+              }
+            }}
+            startIcon={<AddIcon />}
+            onClick={() => setOpenTaskModal(true)}
+          >
+            Create New
+          </Button>
         </Box>
 
-        <Modal
-          open={openTaskModal}
-          onClose={() => setOpenTaskModal(false)}
-          aria-labelledby="task-modal-title"
-          aria-describedby="task-modal-description"
-        >
-          <Box sx={modalStyle}>
-            <Typography id="task-modal-title" variant="h5" component="h2" sx={{ mb: 3 }}>
-              Create New Task
-            </Typography>
-            <TaskForm handleClose={() => setOpenTaskModal(false)} />
-          </Box>
-        </Modal>
-      </form>
-    )}
-  </Formik>
-</Box>
+        <Box height="40vh" m="13px 0 0 0" sx={{
+          "& .MuiDataGrid-cell": {
+            borderBottom: "none",
+            fontSize: "16px",
+            whiteSpace: "nowrap",
+            overflow: "visible",
+          },
+          "& .MuiDataGrid-columnHeaders": {
+            backgroundColor: colors.blueAccent[700],
+            borderBottom: "none",
+            fontWeight: "bold !important",
+            fontSize: "16px !important",
+            color: "#ffffff",
+          },
+          "& .MuiDataGrid-columnSeparator": {
+            display: "none",
+          },
+          "& .MuiDataGrid-columnHeaderTitle": {
+            fontWeight: "bold !important",
+          },
+          "& .MuiDataGrid-virtualScroller": {
+            backgroundColor: "#ffffff",
+          },
+          "& .MuiDataGrid-root::-webkit-scrollbar": {
+            display: "none !important",
+          },
+          "& .MuiDataGrid-virtualScroller::-webkit-scrollbar": {
+            display: "none !important",
+          },
+          "& .MuiDataGrid-root": {
+            "&:hover": {
+              cursor: "pointer",
+              backgroundColor: "#D9EAFD"
+            },
+          },
+          "& .MuiDataGrid-row": {
+            borderBottom: `0.5px solid ${colors.grey[300]}`,
+            "&:hover": {
+              cursor: "pointer",
+              backgroundColor: "#D9EAFD"
+            },
+          },
+          "& .MuiTablePagination-root": {
+            color: "#ffffff !important",
+          },
+          "& .MuiTablePagination-selectLabel, & .MuiTablePagination-input": {
+            color: "#ffffff !important",
+          },
+          "& .MuiTablePagination-displayedRows": {
+            color: "#ffffff !important",
+          },
+          "& .MuiSvgIcon-root": {
+            color: "#ffffff !important",
+          },
+          "& .MuiDataGrid-footerContainer": {
+            borderTop: "none",
+            backgroundColor: colors.blueAccent[700],
+            color: "#ffffff",
+          },
+        }}>
+          <DataGrid
+            sx={{
+              "& .MuiDataGrid-cell": {
+                borderBottom: "none",
+                fontSize: "16px",
+                whiteSpace: "nowrap", // Prevent text wrapping
+                overflow: "visible", // Prevent text truncation
+              },
+              "& .MuiDataGrid-columnHeaders": {
+                backgroundColor: colors.blueAccent[700],
+                borderBottom: "none", // Remove the border below the header
+                fontWeight: "bold !important",
+                fontSize: "16px !important",
+                color: "#ffffff",
+              },
+              // "& .MuiDataGrid-root::-webkit-scrollbar-thumb":{
+              //    width: "2px !important",
+              //    height: "6px !important"
+              //  },
+              "& .MuiDataGrid-columnSeparator": {
+                display: "none", // Hide the column separator
+              },
+              // "& .MuiDataGrid-root::-webkit-scrollbar": {
+              //   display: "none", // Hides scrollbar in Chrome, Safari
+              // },
+              "& .MuiDataGrid-columnHeaderTitle": {
+                fontWeight: "bold !important", // Ensure header text is bold
+              },
+              // "& .MuiDataGrid-virtualScroller": {
+              //   backgroundColor: "#ffffff",
+              // },
+              "& .MuiDataGrid-root::-webkit-scrollbar": {
+                display: "none !important",
+              },
+              "& .MuiDataGrid-virtualScroller::-webkit-scrollbar": {
+                display: "none !important",
+              },
+              "& .MuiDataGrid-root": {
+                // scrollbarWidth: "none !important", // Hides scrollbar in Firefox
+                "&:hover": {
+                  cursor: "pointer",
+                  backgroundColor: "#D9EAFD"
+                },
+              },
+              "& .MuiDataGrid-virtualScroller": {
+                // scrollbarWidth: "none !important",
+                backgroundColor: "#ffffff",
+              },
+              "& .MuiDataGrid-row": {
+                borderBottom: `0.5px solid ${colors.grey[300]}`, // Add border to the bottom of each row
+                "&:hover": {
+                  cursor: "pointer",
+                  backgroundColor: "#D9EAFD"
+                },
+              },
+              "& .MuiTablePagination-root": {
+                color: "#ffffff !important", // Ensure pagination text is white
+              },
+              "& .MuiTablePagination-selectLabel, & .MuiTablePagination-input": {
+                color: "#ffffff !important", // Ensure select label and input text are white
+              },
+              "& .MuiTablePagination-displayedRows": {
+                color: "#ffffff !important", // Ensure displayed rows text is white
+              },
+              "& .MuiSvgIcon-root": {
+                color: "#ffffff !important", // Ensure pagination icons are white
+              },
+              "& .MuiDataGrid-footerContainer": {
+                display: "none",
+                borderTop: "none",
+                backgroundColor: colors.blueAccent[700],
+                color: "#ffffff",
+              },
+            }}
+            rows={initialTickets}
+            columns={columns}
+            // pageSize={10}
+            onRowClick={handleRowClick}
+          />
+        </Box>
+
+                <Modal
+                  open={openTaskModal}
+                  onClose={() => setOpenTaskModal(false)}
+                  aria-labelledby="task-modal-title"
+                  aria-describedby="task-modal-description"
+                >
+                  <Box sx={createtaskmodel}>
+                    <Typography id="task-modal-title" variant="h5" component="h2" sx={{ mb: 3 }}>
+                      Create New Task
+                    </Typography>
+                    <TaskForm handleClose={() => setOpenTaskModal(false)} />
+                  </Box>
+                </Modal>
+
+
+                <Modal
+                  open={shareEntireExperience}
+                  onClose={() => setshareEntireExperience(false)}
+                  aria-labelledby="task-modal-title"
+                  aria-describedby="task-modal-description"
+                >
+                  <Box sx={assignmodel}>
+                    <Typography id="task-modal-title" variant="h5" component="h2" sx={{ mb: 3 }}>
+                      Assign To Customer Relationship Manager
+                    </Typography>
+                    <AssignCrm handleClose={() => setshareEntireExperience(false)} />
+                  </Box>
+                </Modal>
+
+
+      </Box>
+
     </Box>
   );
 };
