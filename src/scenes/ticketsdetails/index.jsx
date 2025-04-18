@@ -33,7 +33,7 @@ const initialTickets = [
   { id: 2, name: "Charan Palemala", status: "Pending", description: "this is not available", priority: "Urgent", ticketraise: "create a task 2", taskid: "2", date: "03-04-2025", time: "10:00 AM" },
   { id: 3, name: "Charan Palemala", status: "Pending", description: "this is not available", priority: "Urgent", ticketraise: "create a task 3", taskid: "3", date: "03-04-2025", time: "10:00 AM" },
   { id: 4, name: "Charan Palemala", status: "Pending", description: "this is not available", priority: "Urgent", ticketraise: "create a task 4", taskid: "4", date: "03-04-2025", time: "10:00 AM" },
-  // { id: 5, name: "Charan Palemala", status: "Pending", description: "this is not available", priority: "Urgent", ticketraise: "create a ticket", taskid: "5", date: "03-04-2025", time: "10:00 AM" },
+  { id: 5, name: "Charan Palemala", status: "Pending", description: "this is not available", priority: "Urgent", ticketraise: "create a ticket", taskid: "5", date: "03-04-2025", time: "10:00 AM" },
   // { id: 6, name: "Charan Palemala", status: "Pending", description: "this is not available", priority: "Urgent", ticketraise: "create a ticket", taskid: "6", date: "03-04-2025", time: "10:00 AM" },
   // { id: 7, name: "Charan Palemala", status: "Pending", description: "this is not available", priority: "Urgent", ticketraise: "create a ticket", taskid: "7", date: "03-04-2025", time: "10:00 AM" },
   // { id: 8, name: "Charan Palemala", status: "Pending", description: "this is not available", priority: "Urgent", ticketraise: "create a ticket", taskid: "8", date: "03-04-2025", time: "10:00 AM" },
@@ -1257,24 +1257,7 @@ const AssignCrm = ({ handleClose }) => {
       }}>
         <Box sx={{ display: "flex", flexDirection: isMobile ? "column" :  "row"   , justifyContent: "flex-end", mb: 2, gap: 2 }}>
 
-          <Button
-            variant="contained"
-            sx={{
-              background: colors.blueAccent[500],
-              fontWeight: "bold",
-              color: "#ffffff",
-              whiteSpace: "nowrap",
-              textTransform: "none",
-              // width: isMobile ? "60%" : "100%",
-              '&:hover': {
-                backgroundColor: colors.blueAccent[600],
-              }
-            }}
-            startIcon={<AddIcon />}
-            onClick={() => setshareEntireExperience(true)}
-          >
-            Assign To
-          </Button>
+
 
           <Button
             variant="contained"
@@ -1292,11 +1275,11 @@ const AssignCrm = ({ handleClose }) => {
             startIcon={<AddIcon />}
             onClick={() => setOpenTaskModal(true)}
           >
-            Create New
+            Create New Task
           </Button>
         </Box>
 
-        <Box height="40vh" m="13px 0 0 0" sx={{
+        <Box height="39vh" m="13px 0 0 0" sx={{
           "& .MuiDataGrid-cell": {
             borderBottom: "none",
             fontSize: "16px",
@@ -1437,6 +1420,31 @@ const AssignCrm = ({ handleClose }) => {
           />
         </Box>
 
+        <Box sx={{marginTop:"20px", margin:"15px"}}>  
+          <hr  />
+        </Box>
+
+        <Box sx={{ display: "flex", flexDirection: isMobile ? "column" :  "row"   , justifyContent: "center", mb: 2, gap: 2 , marginTop:"20px"}}>
+        <Button
+            variant="contained"
+            sx={{
+              background: colors.blueAccent[500],
+              fontWeight: "bold",
+              color: "#ffffff",
+              whiteSpace: "nowrap",
+              textTransform: "none",
+              padding:"14px 25px", 
+              // width: isMobile ? "60%" : "100%",
+              '&:hover': {
+                backgroundColor: colors.blueAccent[600],
+              }
+            }}
+            // startIcon={<AddIcon />}
+            onClick={() => setshareEntireExperience(true)}
+          >
+            Assign To
+          </Button>
+          </Box>
                 <Modal
                   open={openTaskModal}
                   onClose={() => setOpenTaskModal(false)}

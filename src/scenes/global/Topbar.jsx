@@ -32,6 +32,7 @@ const getActivePage = (pathname) => {
     pathname.includes("/profile") ||
     pathname.includes("/newExperiences") ||
     pathname.includes("/pendingExperiences") ||
+    pathname.includes("/taskdetails") ||
     pathname.includes("/resolvedExperiences")
   ) {
     return "/"; // Ensure this matches the `to` prop of the Experiences Item
@@ -50,15 +51,15 @@ const getActivePage = (pathname) => {
   ) {
     return "/organization"; // Ensure this matches the `to` prop of the Experiences Item
   }
-  else if (
-    pathname.includes("/tasks") ||
-    pathname.includes("/taskform") ||
-    pathname.includes("/taskdetails")
+  // else if (
+  //   pathname.includes("/tasks") ||
+  //   pathname.includes("/taskform")
+  //   // pathname.includes("/taskdetails")
 
-  )
-   {
-    return "/tasks"; // Ensure this matches the `to` prop of the Experiences Item
-  }
+  // )
+  //  {
+  //   return "/tasks"; // Ensure this matches the `to` prop of the Experiences Item
+  // }
   else if (
     pathname.includes("/tasks") ||
     pathname.includes("/taskform") ||
