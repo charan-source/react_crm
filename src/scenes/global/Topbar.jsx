@@ -558,7 +558,7 @@ const Topbar = () => {
               <Box sx={{ color: "#ffffff", alignItems: "center", gap: 1, display: "flex" }}>
                 <HomeOutlinedIcon onClick={() => navigate("/")} fontSize="small" sx={{ cursor: "pointer" }} />
                 <CustomDivider />
-                <Typography sx={{ cursor: "pointer", fontSize: "14px" }} onClick={() => navigate(-1)}>
+                <Typography sx={{ cursor: "pointer", fontSize: "14px" }} onClick={ secondaryTitle ? () => navigate(-1) : undefined}>
                   {primaryTitle}
                 </Typography>
                 {secondaryTitle && (
